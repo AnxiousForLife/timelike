@@ -1,7 +1,7 @@
 package game
 
 sealed abstract class Direction(str: String) {
-  //override final def toString() = str
+  override final def toString() = str
 
   //The direction to the RIGHT of each direction
   final def next: Direction = this match {
