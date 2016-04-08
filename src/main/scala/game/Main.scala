@@ -11,6 +11,7 @@ object Main {
 
       val input = scala.io.StdIn.readLine().toLowerCase
       input match {
+        //Quitting the game
         case "quit" => { keepRunning = false }
 
         //Turning right or left
