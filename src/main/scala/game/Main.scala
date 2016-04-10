@@ -1,11 +1,11 @@
 package game
 
 object Main {
-  val startRoom = RoomTwelve
-  val startDirection = North
-  var state = new GameState(List((startRoom, startDirection)), startRoom, startDirection)
-
   def main(args: Array[String]) {
+    val startRoom = RoomTwelve
+    val startDirection = North
+    var state = new GameState(List((startRoom, startDirection)), startRoom, startDirection)
+
     var keepRunning = true
 
     while (keepRunning) {
@@ -32,6 +32,7 @@ object Main {
           }
         }
 
+        //Takes the player back to the previous GameState (as long as there are more than 1 previous GameStates)
         case "rewind" => {
           if (state.log.length > 1) {
             state = state.lastState

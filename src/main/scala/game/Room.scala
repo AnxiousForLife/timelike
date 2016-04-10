@@ -24,8 +24,6 @@ sealed abstract class Room(outwardFace: Direction) {
   }
 }
 
-
-
 final object RoomTwelve extends Room(North) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
   override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomOne, rightFace.right))
