@@ -11,4 +11,7 @@ object Output {
 
   def showNoExit() { println("There's no exit here.") }
   def showEnterRoom() { println("You go through the door.") }
+
+  def showBlockRewind() { println("You can't go back any further.") }
+  def showRewind() { println("SNAP!") }
 }

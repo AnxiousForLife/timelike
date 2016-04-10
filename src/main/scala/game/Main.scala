@@ -1,7 +1,9 @@
 package game
 
 object Main {
-  val state = new GameState(RoomTwelve, North)
+  val startRoom = RoomTwelve
+  val startDirection = North
+  var state = new GameState(List((startRoom, startDirection)), startRoom, startDirection)
 
   def main(args: Array[String]) {
     var keepRunning = true
@@ -12,24 +14,30 @@ object Main {
       val input = scala.io.StdIn.readLine().toLowerCase
       input match {
         //Quitting the game
-        case "quit" => { keepRunning = false }
+        case "quit" => keepRunning = false
 
         //Turning right or left
-        case "right" => { state.direction = state.direction.right.right }
-        case "left" => { state.direction = state.direction.left.left }
+        case "right" => state = state.updateDirection(state.direction.right.right)
+        case "left" => state = state.updateDirection(state.direction.left.left)
 
         //Entering a room
         case "forward" | "enter" | "go" => {
           state.room.currentWall(state.direction).nextRoom match {
             case None => { Output.showNoExit() }
             case Some((r, d)) => {
-              state.room = r
-              state.direction = d
+              state = state.updateRoom(r)
+              state = state.updateDirection(d)
               Output.showEnterRoom()
             }
           }
         }
 
+        case "rewind" => {
+          if (state.log.length > 1) {
+            state = state.lastState
+            Output.showRewind()
+          } else Output.showBlockRewind()
+        }
       }
     }
   }

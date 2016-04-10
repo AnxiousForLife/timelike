@@ -3,8 +3,8 @@ package game
 sealed abstract class Direction(str: String) {
   override final def toString() = str
 
-  //The direction to the RIGHT of each direction
-  final def next: Direction = this match {
+  //The direction to the immediate RIGHT of each direction
+  final def right: Direction = this match {
     case North => NorthEast
     case NorthEast => East
     case East => SouthEast
@@ -15,11 +15,9 @@ sealed abstract class Direction(str: String) {
     case NorthWest => North
   }
 
-  final def right: Direction = next
 
-
-  //The direction to the LEFT of each direction
-  final def previous: Direction = this match {
+  //The direction to the immediate LEFT of each direction
+  final def left: Direction = this match {
     case North => NorthWest
     case NorthEast => North
     case East => NorthEast
@@ -29,9 +27,6 @@ sealed abstract class Direction(str: String) {
     case West => SouthWest
     case NorthWest => West
   }
-
-  final def left: Direction = previous
-
 
   //The direction BEHIND each direction
   final def opposite: Direction = this match {
@@ -46,11 +41,11 @@ sealed abstract class Direction(str: String) {
   }
 }
 
-case object North extends Direction("north")
-case object NorthEast extends Direction("northeast")
-case object East extends Direction("east")
-case object SouthEast extends Direction("southeast")
-case object South extends Direction("south")
-case object SouthWest extends Direction("southwest")
-case object West extends Direction("west")
-case object NorthWest extends Direction("northwest")
+final case object North extends Direction("north")
+final case object NorthEast extends Direction("northeast")
+final case object East extends Direction("east")
+final case object SouthEast extends Direction("southeast")
+final case object South extends Direction("south")
+final case object SouthWest extends Direction("southwest")
+final case object West extends Direction("west")
+final case object NorthWest extends Direction("northwest")

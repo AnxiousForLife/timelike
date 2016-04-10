@@ -1,3 +1,14 @@
 package game
 
-class GameState(var room: Room, var direction: Direction)
+//The game state, containing a log of all the past player locations and the current player location
+class GameState(val log: List[(Room, Direction)], val room: Room, val direction: Direction) {
+  def updateLog(room: Room, direction: Direction) = log :+ (room, direction)
+  def updateRoom(newRoom: Room) = new GameState(updateLog(newRoom, direction), newRoom, direction)
+  def updateDirection(newDirection: Direction) = new GameState(updateLog(room, newDirection), room, newDirection)
+  def lastState = {
+    val lastLog = log.dropRight(1)
+    val lastRoom = lastLog.last._1
+    val lastDirection = lastLog.last._2
+    new GameState(lastLog, lastRoom, lastDirection)
+  }
+}
