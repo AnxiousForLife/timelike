@@ -1,7 +1,9 @@
 package game
 
 //The game rooms and the direction their outer wall faces
-sealed abstract class Room(outwardFace: Direction) {
+sealed abstract class Room(val name: String, val outwardFace: Direction) {
+  override final def toString() = name
+
   val wall0: RoomWall
   val wall1: RoomWall
   val wall2: RoomWall
@@ -9,7 +11,7 @@ sealed abstract class Room(outwardFace: Direction) {
 
   val rightFace: Direction = outwardFace.right.right
   val inwardFace: Direction = outwardFace.opposite
-  val leftFace: Direction = outwardFace.opposite.right.right
+  val leftFace: Direction = outwardFace.left.left
 
   def currentWall(direction: Direction): RoomWall = {
     direction match {
@@ -24,86 +26,88 @@ sealed abstract class Room(outwardFace: Direction) {
   }
 }
 
-final object RoomTwelve extends Room(North) {
+
+
+object RoomTwelve extends Room("Room 12", North) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomOne, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTwelveOne))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomEleven, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayElevenTwelve))
 }
 
-final object RoomOne extends Room(NorthEast) {
+object RoomOne extends Room("Room 1", NorthEast) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomTwo, rightFace))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayOneTwo))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomTwelve, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTwelveOne))
 }
 
-final object RoomTwo extends Room(NorthEast) {
+object RoomTwo extends Room("Room 2", NorthEast) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomThree, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTwoThree))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomOne, leftFace))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayOneTwo))
 }
 
-final object RoomThree extends Room(East) {
+object RoomThree extends Room("Room 3", East) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomFour, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayThreeFour))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomTwo, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTwoThree))
 }
 
-final object RoomFour extends Room(SouthEast) {
+object RoomFour extends Room("Room 4", SouthEast) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomFive, rightFace))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayFourFive))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomThree, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayThreeFour))
 }
 
-final object RoomFive extends Room(SouthEast) {
+object RoomFive extends Room("Room 5", SouthEast) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomSix, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayFiveSix))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomFour, leftFace))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayFourFive))
 }
 
-final object RoomSix extends Room(South) {
+object RoomSix extends Room("Room 6", South) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomSeven, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwaySixSeven))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomFive, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayFiveSix))
 }
 
-final object RoomSeven extends Room(SouthWest) {
+object RoomSeven extends Room("Room 7", SouthWest) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomEight, rightFace))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwaySevenEight))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomSix, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwaySixSeven))
 }
 
-final object RoomEight extends Room(SouthWest) {
+object RoomEight extends Room("Room 8", SouthWest) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomNine, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayEightNine))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomSeven, leftFace))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwaySevenEight))
 }
 
-final object RoomNine extends Room(West) {
+object RoomNine extends Room("Room 9", West) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomTen, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayNineTen))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomEight, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayEightNine))
 }
 
-final object RoomTen extends Room(NorthWest) {
+object RoomTen extends Room("Room 10", NorthWest) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomEleven, rightFace))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTenEleven))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomNine, leftFace.left))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayNineTen))
 }
 
-final object RoomEleven extends Room(NorthWest) {
+object RoomEleven extends Room("Room 11", NorthWest) {
   override val wall0 = new RoomWall("Here's the outer wall", None)
-  override val wall1 = new RoomWall("Here's the door leading forward", Some(RoomTwelve, rightFace.right))
+  override val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayElevenTwelve))
   override val wall2 = new RoomWall("Here's the inner wall", None)
-  override val wall3 = new RoomWall("Here's the door leading backward", Some(RoomTen, leftFace))
+  override val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTenEleven))
 }
