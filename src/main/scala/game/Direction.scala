@@ -15,7 +15,6 @@ sealed abstract class Direction(str: String) {
     case NorthWest => North
   }
 
-
   //The direction to the immediate LEFT of each direction
   final def left: Direction = this match {
     case North => NorthWest
@@ -41,11 +40,11 @@ sealed abstract class Direction(str: String) {
   }
 }
 
-final case object North extends Direction("north")
-final case object NorthEast extends Direction("northeast")
-final case object East extends Direction("east")
-final case object SouthEast extends Direction("southeast")
-final case object South extends Direction("south")
-final case object SouthWest extends Direction("southwest")
-final case object West extends Direction("west")
-final case object NorthWest extends Direction("northwest")
+case object North extends Direction("north")
+case object NorthEast extends Direction("northeast")
+case object East extends Direction("east")
+case object SouthEast extends Direction("southeast")
+case object South extends Direction("south")
+case object SouthWest extends Direction("southwest")
+case object West extends Direction("west")
+case object NorthWest extends Direction("northwest")
