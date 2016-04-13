@@ -1,5 +1,5 @@
 package game
-//change
+
 object Main {
   def main(args: Array[String]) {
     val startRoom = RoomTwelve
@@ -22,11 +22,22 @@ object Main {
 
         //Entering a room
         case "forward" | "enter" | "go" =>
-          state.room.currentWall(state.direction).nextRoom match {
+          state.room.currentWall(state.direction).exit match {
             case None => Output.showNoExit()
-            case Some((r, d)) => {
-              state = state.updateRoom(r)
-              state = state.updateDirection(d)
+            case Some(doorway: Doorway) => {
+              //Is the player moving clockwise?/Does the player change direction in the next room?
+              (state.room.outwardFace == state.direction.left.left, doorway) match {
+                case (true, _: AngledDoorway) => {
+                  state = state.updateRoom(doorway.room2)
+                  state = state.updateDirection(state.direction.right)
+                }
+                case (false, _: AngledDoorway) => {
+                  state = state.updateRoom(doorway.room1)
+                  state = state.updateDirection(state.direction.left)
+                }
+                case (true, _) => state = state.updateRoom(doorway.room2)
+                case (false, _) => state = state.updateRoom(doorway.room1)
+              }
               Output.showEnterRoom()
           }
         }
