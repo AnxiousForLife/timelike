@@ -1,7 +1,7 @@
 package game
 
-class Item(str: String) {
-  override def toString() = str
+class Item(art: String, str: String) {
+  override def toString() = art + " " + str
 }
 
-class Key(str: String) extends Item(str)
+class Key(art: String, str: String) extends Item(art, str)
