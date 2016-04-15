@@ -9,86 +9,86 @@ import game.RoomWall
 
 object RoomTwelve extends Room("Room 12", North) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTwelveOne), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "1" engraved on it""", Some(DoorwayTwelveOne), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayElevenTwelve), None)
+  override lazy val wall3 = new RoomWall("""There's an iron door with a numeral "11" engraved on it""", Some(DoorwayElevenTwelve), None)
 }
 
 object RoomOne extends Room("Room 1", NorthEast) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayOneTwo), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "2" engraved on it""", Some(DoorwayOneTwo), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTwelveOne), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "12" engraved on it"""", Some(DoorwayTwelveOne), None)
 }
 
 object RoomTwo extends Room("Room 2", NorthEast) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTwoThree), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "3" engraved on it""", Some(DoorwayTwoThree), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayOneTwo), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "1" engraved on it"""", Some(DoorwayOneTwo), None)
 }
 
 object RoomThree extends Room("Room 3", East) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayThreeFour), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "4" engraved on it""", Some(DoorwayThreeFour), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTwoThree), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "2" engraved on it"""", Some(DoorwayTwoThree), None)
 }
 
 object RoomFour extends Room("Room 4", SouthEast) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayFourFive), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "5" engraved on it""", Some(DoorwayFourFive), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayThreeFour), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "3" engraved on it"""", Some(DoorwayThreeFour), None)
 }
 
 object RoomFive extends Room("Room 5", SouthEast) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayFiveSix), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "6" engraved on it""", Some(DoorwayFiveSix), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayFourFive), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "4" engraved on it"""", Some(DoorwayFourFive), None)
 }
 
 object RoomSix extends Room("Room 6", South) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwaySixSeven), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "7" engraved on it""", Some(DoorwaySixSeven), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayFiveSix), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "5" engraved on it"""", Some(DoorwayFiveSix), None)
 }
 
 object RoomSeven extends Room("Room 7", SouthWest) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwaySevenEight), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "8" engraved on it""", Some(DoorwaySevenEight), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwaySixSeven), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "6" engraved on it"""", Some(DoorwaySixSeven), None)
 }
 
 object RoomEight extends Room("Room 8", SouthWest) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayEightNine), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "9" engraved on it""", Some(DoorwayEightNine), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwaySevenEight), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "7" engraved on it"""", Some(DoorwaySevenEight), None)
 }
 
 object RoomNine extends Room("Room 9", West) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayNineTen), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "10" engraved on it"""", Some(DoorwayNineTen), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayEightNine), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "8" engraved on it"""", Some(DoorwayEightNine), None)
 }
 
 object RoomTen extends Room("Room 10", NorthWest) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayTenEleven), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "11" engraved on it"""", Some(DoorwayTenEleven), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayNineTen), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "9" engraved on it"""", Some(DoorwayNineTen), None)
 }
 
 object RoomEleven extends Room("Room 11", NorthWest) {
   override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
-  override lazy val wall1 = new RoomWall("Here's the door leading forward", Some(DoorwayElevenTwelve), None)
+  override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "12" engraved on it"""", Some(DoorwayElevenTwelve), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
-  override lazy val wall3 = new RoomWall("Here's the door leading backward", Some(DoorwayTenEleven), None)
+  override lazy val wall3 = new RoomWall(""""There's an iron door with a numeral "10" engraved on it"""", Some(DoorwayTenEleven), None)
 }
 
 object DoorwayTwelveOne extends AngledDoorway(RoomTwelve, RoomOne, Unlocked)
