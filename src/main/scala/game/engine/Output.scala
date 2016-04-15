@@ -1,4 +1,7 @@
-package game
+package game.engine
+
+import game.GameState
+import game.Item
 
 object Output {
   def showRoom(state: GameState) = {
@@ -10,11 +13,13 @@ object Output {
     s"You are facing $dir."
   }
   def showWall(state: GameState) = state.room.currentWall(state.direction).showText
-
   def showState(state: GameState) { println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".").mkString(" ")) }
 
   def showNoExit() { println("There's no exit here.") }
   def showEnterRoom() { println("You go through the door.") }
+
+  def showTakeNothing() { println("There's nothing here to take.") }
+  def showTakeItem(x: Item) { println(s"You take the $x.")}
 
   def showKeyLocked() { println("The door is locked.") }
   def showDoorBarred() { println("The door is blocked by bars.") }
