@@ -1,6 +1,8 @@
 package game
 
 sealed abstract class Direction(str: String) {
+  import Direction._
+
   override final def toString() = str
 
   //The direction to the immediate RIGHT of each direction
@@ -40,11 +42,13 @@ sealed abstract class Direction(str: String) {
   }
 }
 
-case object North extends Direction("north")
-case object NorthEast extends Direction("northeast")
-case object East extends Direction("east")
-case object SouthEast extends Direction("southeast")
-case object South extends Direction("south")
-case object SouthWest extends Direction("southwest")
-case object West extends Direction("west")
-case object NorthWest extends Direction("northwest")
+object Direction {
+  case object North extends Direction("north")
+  case object NorthEast extends Direction("northeast")
+  case object East extends Direction("east")
+  case object SouthEast extends Direction("southeast")
+  case object South extends Direction("south")
+  case object SouthWest extends Direction("southwest")
+  case object West extends Direction("west")
+  case object NorthWest extends Direction("northwest")
+}
