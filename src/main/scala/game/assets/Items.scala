@@ -2,5 +2,5 @@ package game.assets
 
 import game.Item
 
-object Compass extends Item("compass")
-object Watch extends Item("watch")
+object Compass extends Item("a", "compass")
+object Watch extends Item("a", "watch")
