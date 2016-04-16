@@ -8,7 +8,7 @@ import game.Room
 import game.RoomWall
 
 object RoomTwelve extends Room("Room 12", North) {
-  override lazy val wall0 = new RoomWall("Here's the outer wall", None, None)
+  override lazy val wall0 = new RoomWall("There's a pair of large, rusted iron doors before you. Between the two handles is embossed the image of a snake eating its tail, with a keyhole for an eye", None, None)
   override lazy val wall1 = new RoomWall("""There's an iron door with a numeral "1" engraved on it""", Some(DoorwayTwelveOne), None)
   override lazy val wall2 = new RoomWall("Here's the inner wall", None, None)
   override lazy val wall3 = new RoomWall("""There's an iron door with a numeral "11" engraved on it""", Some(DoorwayElevenTwelve), None)

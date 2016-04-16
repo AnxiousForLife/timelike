@@ -1,9 +1,9 @@
 package game
 
-//The game rooms and the direction their outer wall faces
-abstract class Room(val name: String, val outwardFace: Direction) {
-  override final def toString() = name
+import game.util.Printable
 
+//The game rooms and the direction their outer wall faces
+abstract class Room(str: String, val outwardFace: Direction) extends Printable(str) {
   val wall0: RoomWall
   val wall1: RoomWall
   val wall2: RoomWall
