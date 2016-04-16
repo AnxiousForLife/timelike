@@ -1,9 +1,9 @@
 package game
 
-sealed abstract class Direction(str: String) {
-  import Direction._
+import game.util.Printable
 
-  override final def toString() = str
+sealed abstract class Direction(str: String) extends Printable(str) {
+  import Direction._
 
   //The direction to the immediate RIGHT of each direction
   final def right: Direction = this match {
