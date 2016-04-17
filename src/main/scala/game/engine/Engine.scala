@@ -1,14 +1,18 @@
 package game.engine
 
 import game._
+import game.RoomObject._
 import game.LockState._
+import game.util.Circular
 
 class Engine(val state: GameState) {
+
+  def getInput() = scala.io.StdIn.readLine().toLowerCase
 
   //Entering a room
   def enterRoom() = {
     //Is there a door?
-    state.room.currentWall(state.direction).exit match {
+    state.currentWall.exit match {
       case None => Output.showNoExit()
       case Some(doorway: Doorway) => {
         val doorWillOpen: Boolean = {
@@ -55,12 +59,45 @@ class Engine(val state: GameState) {
   def takeItem() = {
     val currentWall = state.room.currentWall(state.direction)
     currentWall.item match {
-      case None    => Output.showTakeNothing()
+      case None => Output.showTakeNothing()
       case Some(x) => {
         currentWall.item = None
         state.inventory += x
         Output.showTakeItem(x)
       }
+    }
+  }
+
+  //Searching through cabinets ***REDUNDANT "TAKE" METHOD
+  def searchLoop() = {
+    state.currentWall.roomObject match {
+      case Some(cabinet: Cabinet) => {
+        var keepRunning = true
+        val it = new Circular(cabinet.drawers)
+
+        while (keepRunning) {
+          Output.showDrawer(it.current, cabinet.drawers.indexOf(it.current) + 1)
+          val input = getInput()
+          input match {
+            case "exit" => keepRunning = false
+            case "next" => it.next
+            case "prev" => it.prev
+            case "take" => {
+              it.current.item match {
+                case None => Output.showTakeNothing()
+                case Some(x) => {
+                  it.current.item = None
+                  state.inventory += x
+                  Output.showTakeItem(x)
+                }
+                  true
+              }
+            }
+          }
+        }
+      }
+
+      case _ => Output.showNoSearch()
     }
   }
 
@@ -78,7 +115,7 @@ class Engine(val state: GameState) {
     while (keepRunning) {
       Output.showState(state)
 
-      val input = scala.io.StdIn.readLine().toLowerCase
+      val input = getInput()
       input match {
         //Quitting the game
         case "quit" => keepRunning = false
@@ -90,6 +127,8 @@ class Engine(val state: GameState) {
         case "forward" | "enter" | "go" => enterRoom()
 
         case "take" => takeItem()
+
+        case "search" => searchLoop()
 
         case "rewind" => rewind()
       }

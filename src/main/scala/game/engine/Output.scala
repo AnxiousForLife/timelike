@@ -1,7 +1,9 @@
 package game.engine
 
+import game.Drawer
 import game.GameState
 import game.Item
+import game.util.NumberToOrdinalWords
 
 object Output {
   def showRoom(state: GameState) = {
@@ -13,19 +15,34 @@ object Output {
     s"You are facing $dir."
   }
   def showWall(state: GameState): String = state.room.currentWall(state.direction).showText
+  def showRoomObject(state: GameState): String = {
+    state.room.currentWall(state.direction).roomObject match {
+      case None => ""
+      case Some(x) => {
+        val roomObject = x.describe
+        s"There's $roomObject."
+      }
+    }
+  }
   def showItem(state: GameState): String = {
     state.room.currentWall(state.direction).item match {
       case None => ""
-      case Some(x) => s"There's $x."
+      case Some(x) => {
+        val itemWithArticle = x.withArticle
+        s"There's $itemWithArticle."
+      }
     }
   }
-  def showState(state: GameState) { println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".", showItem(state)).mkString(" ")) }
+  def showState(state: GameState) { println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".", showRoomObject(state), showItem(state)).mkString(" ")) }
 
   def showNoExit() { println("There's no exit here.") }
   def showEnterRoom() { println("You go through the door.") }
 
-  def showTakeNothing() { println("There's nothing here to take.") }
+  def showTakeNothing() { println("Nothing here to take.") }
   def showTakeItem(x: Item) { println(s"You take the $x.")}
+
+  def showNoSearch() { println("Nothing here to search.")}
+  def showDrawer(drawer: Drawer, n: Int) { println(s"You look in the ${ NumberToOrdinalWords.convert6(n) } drawer." ++ " " ++ drawer.show())}
 
   def showKeyLocked() { println("The door is locked.") }
   def showDoorBarred() { println("The door is blocked by bars.") }
