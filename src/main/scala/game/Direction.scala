@@ -1,7 +1,5 @@
 package game
 
-import game.util.Printable
-
 sealed abstract class Direction(str: String) extends Printable(str) {
   import Direction._
 

@@ -1,7 +1,5 @@
 package game
 
-import game.util.Printable
-
 //The game rooms and the direction their outer wall faces
 abstract class Room(str: String, val outwardFace: Direction) extends Printable(str) {
   val wall0: RoomWall

@@ -1,7 +1,5 @@
 package game
 
-import game.util.Noun
-
 class Drawer(var item: Option[Item]) {
   def show() = {
     item match {
@@ -11,4 +9,4 @@ class Drawer(var item: Option[Item]) {
   }
 }
 
-object Drawer extends Noun("drawer", "a")
+object Drawer extends Noun("drawer", "a", None)

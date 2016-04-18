@@ -1,7 +1,5 @@
 package game
 
-import game.util.Noun
+class Item(str: String, art: String, ap: Option[String]) extends Noun(str, art, ap)
 
-class Item(str: String, art: String) extends Noun(str, art)
-
-class Key(str: String, art: String) extends Item(str, art)
+class Key(str: String, art: String, ap: Option[String]) extends Item(str, art, ap)
