@@ -3,11 +3,12 @@ package game.assets
 object Doorways {
 
   import game.{AngledDoorway, Doorway}
+  import game.assets.Keys._
   import game.LockState._
 
   object DoorwayTwelveOne extends AngledDoorway(RoomTwelve, RoomOne, Unlocked)
 
-  object DoorwayOneTwo extends Doorway(RoomOne, RoomTwo, Unlocked)
+  object DoorwayOneTwo extends Doorway(RoomOne, RoomTwo, KeyLock(Room2Key))
 
   object DoorwayTwoThree extends AngledDoorway(RoomTwo, RoomThree, Unlocked)
 
