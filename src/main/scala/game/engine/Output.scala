@@ -3,6 +3,7 @@ package game.engine
 import game.Drawer
 import game.GameState
 import game.Item
+import game.util.ListStrings
 import game.util.NumberToOrdinalWords
 
 object Output {
@@ -20,7 +21,7 @@ object Output {
 
   def showRoomObject(state: GameState): String = state.room.currentWall(state.direction).roomObject.map(" There's " ++ _.describe ++ ".").getOrElse("")
 
-  def showItem(state: GameState): String = state.room.currentWall(state.direction).item.map(" There's " ++ _.withArticle ++ " here.").getOrElse("")
+  def showItem(state: GameState): String = state.room.currentWall(state.direction).item.map(x => " There's " ++ ListStrings.list(x.map(_.withArticle)) ++ " here.").getOrElse("")
 
   //mkString combines the necessary strings, while the optional strings are appended separately.
   def showState(state: GameState) {

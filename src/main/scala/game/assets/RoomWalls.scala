@@ -12,7 +12,7 @@ object RoomWalls {
   object WallTwelve2 extends RoomWall("Here's the inner wall", None, None, None)
   object WallTwelve3 extends RoomWall("""There's an iron door with a numeral "11" engraved on it""", Some(DoorwayElevenTwelve), None, None)
 
-  object WallOne0 extends RoomWall("Here's the outer wall", None, None, Some(Room2Key))
+  object WallOne0 extends RoomWall("Here's the outer wall", None, None, Some(Seq(Room2Key, Room2Key, Room2Key)))
   object WallOne1 extends RoomWall("""There's an iron door with a numeral "2" engraved on it""", Some(DoorwayOneTwo), None, None)
   object WallOne2 extends RoomWall("Here's the inner wall", None, None, None)
   object WallOne3 extends RoomWall("""There's an iron door with a numeral "12" engraved on it""", Some(DoorwayTwelveOne), None, None)

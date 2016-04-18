@@ -56,7 +56,7 @@ class Engine(val state: GameState) {
     }
   }
 
-  def takeItem() = {
+  /*def takeItem() = {
     val currentWall = state.room.currentWall(state.direction)
     currentWall.item match {
       case None => Output.showTakeNothing()
@@ -66,7 +66,7 @@ class Engine(val state: GameState) {
         Output.showTakeItem(x)
       }
     }
-  }
+  }*/
 
   //Searching through cabinets ***REDUNDANT "TAKE" METHOD
   def searchLoop() = {
@@ -126,7 +126,7 @@ class Engine(val state: GameState) {
 
         case "forward" | "enter" | "go" => enterRoom()
 
-        case "take" => takeItem()
+        /*case "take" => takeItem()*/
 
         case "search" => searchLoop()
 
