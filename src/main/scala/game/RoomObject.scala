@@ -1,10 +1,12 @@
 package game
 
-abstract class RoomObject(art: String, str: String, ap: Option[String]) extends Noun(str, art, ap: Option[String]) with Describable
+abstract class RoomObject extends Describable
 
 object RoomObject {
-  class Cabinet(val drawers: List[Drawer]) extends RoomObject("cabinet", "a", None) {
+  class Cabinet(val drawers: List[Drawer]) extends RoomObject with Container {
     def drawerAmt = Drawer.withNumber(drawers.size)
-    def describe = this.withArticle + " with " + drawerAmt
+    def describe = Cabinet.withArticle + " with " + drawerAmt
   }
+
+  object Cabinet extends Noun("cabinet", "a", None) with Openable with Searchable
 }

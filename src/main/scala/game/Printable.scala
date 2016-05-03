@@ -1,5 +1,5 @@
 package game
 
-abstract class Printable(str: String) {
+abstract class Printable(val str: String) {
   override def toString = str
 }
