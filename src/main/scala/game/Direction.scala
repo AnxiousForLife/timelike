@@ -1,9 +1,8 @@
 package game
 
-import game.util.Printable
-
-sealed abstract class Direction(str: String) extends Printable(str) {
+sealed abstract class Direction(str: String) extends Argument(str) {
   import Direction._
+  import RelativeDirection._
 
   //The direction to the immediate RIGHT of each direction
   final def right: Direction = this match {
@@ -40,6 +39,14 @@ sealed abstract class Direction(str: String) extends Printable(str) {
     case West => East
     case NorthWest => SouthEast
   }
+
+  def turn(rDir: RelativeDirection) = {
+    rDir match {
+      case Left => this.left.left
+      case Right => this.right.right
+      case Back => this.opposite
+    }
+  }
 }
 
 object Direction {
@@ -51,4 +58,12 @@ object Direction {
   case object SouthWest extends Direction("southwest")
   case object West extends Direction("west")
   case object NorthWest extends Direction("northwest")
+}
+
+sealed abstract class RelativeDirection(str: String) extends Argument(str)
+
+object RelativeDirection {
+  case object Left extends RelativeDirection("left")
+  case object Right extends RelativeDirection("right")
+  case object Back extends RelativeDirection("around")
 }
