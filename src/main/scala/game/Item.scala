@@ -5,14 +5,14 @@ import scala.collection.mutable
 class Item(override val noun: String,
            override val art: String,
            override val adj: Option[String],
-           var location: Container) extends Noun(noun, art, adj) {
+           var location: ItemLocation) extends Noun(noun, art, adj) {
   Item.update(this)
 }
 
 class Key(override val noun: String,
           override val art: String,
           override val adj: Option[String],
-          location: Container) extends Item(noun, art, adj, location)
+          location: ItemLocation) extends Item(noun, art, adj, location)
 
 object Item {
   var list = mutable.Set.empty[Item]

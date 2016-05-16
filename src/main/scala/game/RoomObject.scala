@@ -1,12 +1,12 @@
 package game
 
-abstract class RoomObject extends Describable
+abstract class RoomObject(override val noun: String,
+                          override val art: String,
+                          override val adj: Option[String],
+                          var location: ItemLocation) extends Noun(noun, art, adj)
 
 object RoomObject {
-  class Cabinet(val drawers: List[Drawer]) extends RoomObject with Container {
-    def drawerAmt = Drawer.withNumber(drawers.size)
-    def describe = Cabinet.withArticle + " with " + drawerAmt
-  }
+  class Cabinet extends RoomObject with ItemLocation
 
-  object Cabinet extends Noun("cabinet", "a", None) with Openable with Searchable
+  object Cabinet extends Noun("cabinet", "a", None) with Searchable
 }

@@ -1,10 +1,10 @@
 package game
 
 abstract class Sandbag(override val noun: String,
-              override val art: String,
-              override val adj: Option[String],
-              location: Container,
-              capacity: Int) extends Item(noun, art, adj, location) {
+                       override val art: String,
+                       override val adj: Option[String],
+                       location: ItemLocation,
+                       capacity: Int) extends Item(noun, art, adj, location) {
   var amt: Int
 
   def remaining = capacity - amt

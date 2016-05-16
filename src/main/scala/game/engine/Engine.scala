@@ -53,7 +53,7 @@ class Engine(val state: GameState) {
 
   def tryExit() = {
     //Is there a door?
-    state.currentWall.exit match {
+    state.currentWall.door match {
       case None => Output.showNoExit()
       case Some(door: Door) => {
         if (doorWillOpen(door)) {
@@ -104,10 +104,10 @@ class Engine(val state: GameState) {
     }
   }
 
-  def availContainers: Seq[Container] = {
+  def availContainers: Seq[ItemLocation] = {
     val roomObj = state.currentWall.roomObject match {
-      case Some(c: Container) => Seq[Container](c)
-      case _ => Seq.empty[Container]
+      case Some(c: ItemLocation) => Seq[ItemLocation](c)
+      case _ => Seq.empty[ItemLocation]
     }
     state.currentWall +: roomObj
   }
@@ -117,7 +117,7 @@ class Engine(val state: GameState) {
   }
 
   def availOpenables: Seq[Openable] = {
-    val door = state.currentWall.exit match {
+    val door = state.currentWall.door match {
       case Some(d: Door with Openable) => Seq[Openable](d)
       case _ => Seq.empty[Openable]
     }
