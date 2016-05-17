@@ -1,9 +1,7 @@
 package game
 
-import scala.collection.mutable
-
 //The game state, containing a log of all the past player locations and the current player location
-class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction, var inventory: mutable.Set[Item]) {
+class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction) extends Argument(new Noun("game")) {
   def currentWall = room.currentWall(direction)
 
   def updateLog() { log :+= (room, direction) }
@@ -15,8 +13,6 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
     direction = newDirection
     updateLog()
   }
-  def addItem(x: Item) = inventory += x
-  def removeItem(x: Item) = inventory -= x
 
   def lastState() = {
     log = log.dropRight(1)

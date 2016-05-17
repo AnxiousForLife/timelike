@@ -3,18 +3,20 @@ package game
 import scala.collection.mutable
 
 //Anything that can be the argument of a sentence
-abstract class Argument(str: String) extends Printable(str) {
-  Argument.update(this)
+class Argument(val lexeme: Lexeme) {
+  val actions = mutable.Map.empty[PlayerAction, () => ()]
 
-  val actions: Map[PlayerAction, () => ()]
+  Argument.update(this)
 }
 
-class DummyArgument(str: String) extends Argument(str)
+class DummyArgument(lexeme: Lexeme) extends Argument(lexeme) { override val actions = Map.empty }
 
 object Argument {
   val list = mutable.Map.empty[String, Argument]
 
-  def update(a: Argument) { list(a.str) = a }
+  def update(a: Argument) { list(a.lexeme.lemma) = a }
 
-  def lookup(input: String): Argument = list.getOrElse(input, new DummyArgument(input))
+  def lookup(input: String): Argument = list.getOrElse(input, new DummyArgument(new Lexeme(input)))
 }
+
+class Cabinet extends Openable(new CountableNoun("cabinet")) with ItemLocation

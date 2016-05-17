@@ -36,21 +36,17 @@ object InputParser extends RegexParsers {
     command(reader) match {
       case Success(c: Command, input: Input) => {
         c match {
-          //Quit
-          case SimpleCommand("quit") | TargetedCommand("quit", "game") => Quit
-
           //Turns
           case SimpleCommand("left") => new Turn(Left)
           case SimpleCommand("right") => new Turn(Right)
-          case SimpleCommand("back") => new Turn(Back)
           case TargetedCommand("turn", x) => new Turn(Argument.lookup(x))
 
           //Opening things
           case SimpleCommand("open") => new Open(None)
           case TargetedCommand("open", x) => new Open(Some(Argument.lookup(x)))
 
-          case SimpleCommand("take") => new TakeItem(None)
-          case TargetedCommand("take", x) => new TakeItem(Some(Argument.lookup(x)))
+          case SimpleCommand("take") => TakeItem
+          case TargetedCommand("take", x) => TakeItem
 
           //Searching through things
           case SimpleCommand("search") => new StartSearch(None)

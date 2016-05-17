@@ -1,6 +1,6 @@
 package game
 
-sealed abstract class Direction(str: String) extends Argument(str) {
+sealed abstract class Direction(str: String) extends Printable(str) {
   import Direction._
   import RelativeDirection._
 
@@ -44,7 +44,6 @@ sealed abstract class Direction(str: String) extends Argument(str) {
     rDir match {
       case Left => this.left.left
       case Right => this.right.right
-      case Back => this.opposite
     }
   }
 }
@@ -60,10 +59,9 @@ object Direction {
   case object NorthWest extends Direction("northwest")
 }
 
-sealed abstract class RelativeDirection(str: String) extends Argument(str)
+sealed abstract class RelativeDirection(noun: Noun) extends Argument(noun)
 
 object RelativeDirection {
-  case object Left extends RelativeDirection("left")
-  case object Right extends RelativeDirection("right")
-  case object Back extends RelativeDirection("around")
+  case object Left extends RelativeDirection(new Noun("left"))
+  case object Right extends RelativeDirection(new Noun("right"))
 }

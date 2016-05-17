@@ -1,3 +1,3 @@
 package game
 
-class Lexeme(lemma: String)
+class Lexeme(val lemma: String)
