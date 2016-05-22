@@ -21,13 +21,25 @@ object Output {
 
   def showWall(state: GameState): String = state.currentWall.showText
 
-  def showRoomObject(state: GameState): String = state.currentWall.roomObject.map(" There's " ++ _.describe ++ ".").getOrElse("")
+  def showArgument(state: GameState): String = state.currentWall.arguments.map(" There's " ++ _.noun.withIndefinite ++ ".").getOrElse("")
 
-  //def showItem(state: GameState): String = ListStrings.listAnd(Item.list.filter(x => state.currentWall == x.location).map(x => " There's " ++ x.withArticle ++ " here."))
+  def showItems(state: GameState): String = {
+    state.currentWall.availItems match {
+      case Nil => ""
+      case items => {
+        val stringList: Seq[String] = for (x <- items) yield x.noun.withIndefinite
+        " There's " ++ ListStrings.listOr(stringList) ++ " here."
+      }
+    }
+  }
 
   //mkString combines the necessary strings, while the optional strings are appended separately.
   def showState(state: GameState) {
-    println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".").mkString(" ") ++ showRoomObject(state) /*++ showItem(state)*/)
+    println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".").mkString(" ") ++ showArgument(state) ++ showItems(state))
+  }
+
+  def showAmbiguousDirection() = {
+    println("But which way?")
   }
 
   def showNotADirection(a: Argument) = {
@@ -36,6 +48,14 @@ object Output {
 
   def showTurn(rd: RelativeDirection) = {
     println(s"You turn $rd.")
+  }
+
+  def showOpen(o: Openable) = {
+    println(s"${o.noun.withDefinite.capitalize} opens.")
+  }
+
+  def showAlreadyOpened(o: Openable) = {
+    println(s"${o.noun.withDefinite.capitalize} is already open.")
   }
 
   def showCantOpen(a: Argument) = {
@@ -48,7 +68,7 @@ object Output {
 
   //Prints a list of things the player can open if they don't specify what to open.
   def showAmbiguousOpen(openables: Seq[Openable]) = {
-    val stringList: Seq[String] = for (x <- openables) yield "the " ++ x.toString()
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite
     val listOr = ListStrings.listOr(stringList)
     println(s"You can open $listOr.")
   }
@@ -58,27 +78,42 @@ object Output {
   }
 
   def showEnterRoom() {
-    println("You go through the door.")
+    println("You walk through the doorway.")
   }
 
-  def showTakeNothing() {
+  def showDoorClosed() {
+    println("The door is closed.")
+  }
+
+  def showCantEnter() {
+    println("Can't enter that.")
+  }
+
+  def showNoItem() {
     println("Nothing here to take.")
+  }
+
+  //Prints a list of items the player can take if they don't specify what to take.
+  def showAmbiguousTake(items: Seq[Item]) = {
+    val stringList: Seq[String] = for (x <- items) yield x.noun.withDefinite
+    val listOr = ListStrings.listOr(stringList)
+    println(s"You can take $listOr.")
   }
 
   def showTakeItem(x: Item) {
     println(s"You take the $x.")
   }
 
-  def showNoSearch() {
-    println("Nothing here to search.")
+  def showInvalidTake() {
+    println(s"Nothing like that here.")
   }
 
-  def showNotSearchable() {
-    println("Not something to search.")
+  def showCantTake() {
+    println(s"Can't take that.")
   }
 
-  def showDrawer(drawer: Drawer, n: Int) {
-    println(s"You look in the ${NumberToOrdinalWords.convert6(n)} drawer." ++ " "/* ++ drawer.show()*/)
+  def showCantUnlock() {
+    println("Can't unlock that.")
   }
 
   def showKeyLocked() {
@@ -89,8 +124,30 @@ object Output {
     println("The door is blocked by bars.")
   }
 
-  def showUnlock() {
-    println("You unlock the door.")
+  def showUnlock(o: Openable) {
+    println(s"You unlock ${o.noun.withDefinite}.")
+  }
+
+  def showNoKey() {
+    println("You don't have the key to open this.")
+  }
+
+  def showCantUnlockBars() {
+    println("There's no way to get past the bars.")
+  }
+
+  def showAlreadyUnlocked(o: Openable) = {
+    println(s"${o.noun.withDefinite.capitalize} isn't locked.")
+  }
+
+  def showNoUnlockable() = {
+    println(s"There's nothing here to unlock.")
+  }
+
+  def showAmbiguousUnlock(openables: Seq[Openable]) = {
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite
+    val listOr = ListStrings.listOr(stringList)
+    println(s"You can unlock $listOr.")
   }
 
   def showBlockRewind() {

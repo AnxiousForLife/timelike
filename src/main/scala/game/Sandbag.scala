@@ -1,10 +1,11 @@
 package game
 
-abstract class Sandbag(override val noun: String,
-                       override val art: String,
-                       override val adj: Option[String],
-                       location: ItemLocation,
-                       capacity: Int) extends Item(noun, art, adj, location) {
+
+
+abstract class Sandbag(location: ItemLocation,
+                       capacity: Int) extends Item(new CountableNoun("bag"), location) {
+  import game.PlayerAction._
+
   var amt: Int
 
   def remaining = capacity - amt

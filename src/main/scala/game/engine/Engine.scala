@@ -1,18 +1,15 @@
 package game.engine
 
 import game._
-import game.RoomObject._
 import game.LockState._
 import game.PlayerAction._
-import game.util.Circular
-
-import scala.collection.mutable
 
 class Engine(val state: GameState) {
   var keepRunning = true
 
   def gameLoop() = {
     while (keepRunning) {
+      println(s"${state.direction}")
       Output.showState(state)
 
       val input = getInput()
@@ -22,159 +19,110 @@ class Engine(val state: GameState) {
 
   def getInput() = scala.io.StdIn.readLine().toLowerCase
 
-  def matchAction(a: PlayerAction) = {
+  def matchAction(a: (PlayerAction, Option[Argument])) = {
     a match {
-      case InvalidAction => Output.showInvalid()
-      case Quit => quit()
-      case x: Turn => turn(x.arg)
-      case x: Open => tryOpen(x.arg)
-      case x: StartSearch => trySearch(x.arg)
-      case Rewind => rewind()
+      case (InvalidAction, _) => Output.showInvalid()
+      case (Turn, x) => tryTurn(x)
+      case (Open, x) => tryOpen(x)
+      case (Enter, x) => tryEnter(x)
+      case (TakeItem, x) => tryTake(x)
+      case (Unlock, x) => tryUnlock(x)
+      case (Rewind, _) => rewind()
     }
   }
 
-  def quit() { keepRunning = false }
-
-  def turn(a: Argument) = {
+  def tryTurn(a: Option[Argument]) = {
     a match {
-      case rd: RelativeDirection => {
-        state.updateDirection(state.direction.turn(rd))
+      case None => Output.showAmbiguousDirection()
+      case Some(rd: RelativeDirection) => {
+        state.actions(Turn)(rd)
         Output.showTurn(rd)
       }
-      case _ => Output.showNotADirection(a)
+      case Some(a) => Output.showNotADirection(a)
     }
   }
 
-  def open(o: Openable) = {
-    o match {
-      case d: Door => tryExit()
-    }
-  }
-
-  def tryExit() = {
-    //Is there a door?
-    state.currentWall.door match {
-      case None => Output.showNoExit()
-      case Some(door: Door) => {
-        if (doorWillOpen(door)) {
-          enterRoom(door)
-        }
-        else Output.showNoExit()
-      }
-    }
-  }
-
-  //Entering a room
-  def enterRoom(door: Door) = {
-    //Is the player moving clockwise?/Does the player change direction in the next room?
-    (state.room.outwardFace == state.direction.left.left, door) match {
-      case (true, _: AngledDoor) => {
-        state.updateRoom(door.room2)
-        state.updateDirection(state.direction.right)
-      }
-      case (false, _: AngledDoor) => {
-        state.updateRoom(door.room1)
-        state.updateDirection(state.direction.left)
-      }
-      case (true, _) => state.updateRoom(door.room2)
-      case (false, _) => state.updateRoom(door.room1)
-    }
-    Output.showEnterRoom()
-  }
-
-  //Is the door locked?
-  def doorWillOpen(door: Door): Boolean = {
-    door.lock match {
-      case Unlocked => true
-      case Barred => {
-        Output.showDoorBarred()
-        false
-      }
-      case keyLock: KeyLock => {
-        //Does the player have the right key?
-        if (state.inventory.contains(keyLock.key)) {
-          door.lock = Unlocked
-          Output.showUnlock()
-          true
-        } else {
-          Output.showKeyLocked()
-          false
-        }
-      }
-    }
-  }
-
-  def availContainers: Seq[ItemLocation] = {
-    val roomObj = state.currentWall.roomObject match {
-      case Some(c: ItemLocation) => Seq[ItemLocation](c)
-      case _ => Seq.empty[ItemLocation]
-    }
-    state.currentWall +: roomObj
-  }
-
-  def availItems: mutable.Set[Item] = {
-    Item.list.filter(x => availContainers.contains(x.location))
-  }
-
-  def availOpenables: Seq[Openable] = {
-    val door = state.currentWall.door match {
-      case Some(d: Door with Openable) => Seq[Openable](d)
-      case _ => Seq.empty[Openable]
-    }
-    val roomObj = state.currentWall.roomObject match {
-      case Some(c: Openable) => Seq[Openable](c)
-      case _ => Seq.empty[Openable]
-    }
-    door ++ roomObj
-  }
-
-  def takeItem(i: Item) = {
-    if (availItems.isEmpty) Output.showTakeNothing()
-    else {
-      i.location = Inventory
-      Output.showTakeItem(i)
-    }
-  }
-
-  //Searching through cabinets
-  def trySearch(a: Option[Argument]) = {
+  def tryEnter(a: Option[Argument]) = {
     a match {
-      case Some(Cabinet) | Some(Drawer) | None => {
-        state.currentWall.roomObject match {
-          case Some(cabinet: Cabinet) => {
-            var keepSearching = true
-            val it = new Circular(cabinet.drawers)
-
-            while (keepSearching) {
-              it.current.open()
-              Output.showDrawer(it.current, cabinet.drawers.indexOf(it.current) + 1)
-              val input = getInput()
-              val action = InputParser.parseSearchAction(input)
-              action match {
-                //###TAKE ITEM GOES HERE###
-                case _: TakeItem => {}
-                case _ => {
-                  it.current.close()
-                  action match {
-                    case StopSearch => keepSearching = false
-                    case NextDrawer => it.next
-                    case PrevDrawer => it.prev
-                  }
-                }
-              }
+      case Some(Room) | Some(Doorway) | None => {
+        state.currentWall.door match {
+          case None => Output.showNoExit()
+          case Some(door: Door) => {
+            if (door.isOpen) {
+              state.enterRoom(door)
+              Output.showEnterRoom()
             }
+            else Output.showDoorClosed()
           }
-          case _ => Output.showNoSearch()
         }
       }
-      case _ => Output.showNotSearchable()
+      case _ => Output.showCantEnter()
     }
+  }
+
+  def tryUnlock(a: Option[Argument]) = {
+    a match {
+      case Some(o: Openable) => unlock(o)
+      case None => {
+        val openables = state.currentWall.availOpenables
+        openables.length match {
+          case 0 => Output.showNoUnlockable()
+          case 1 => unlock(openables.head)
+          case n if n > 1 => Output.showAmbiguousOpen(openables)
+        }
+      }
+      case _ => Output.showCantUnlock()
+    }
+  }
+
+  def unlock(o: Openable) = {
+    if (!o.isUnlocked) {
+      o.lock match {
+        case Unlocked => println("ERROR: Already Unlocked.")
+        case k: KeyLock => {
+          if (Inventory.contains(k.key)) {
+            o.actions(Unlock)
+            Output.showUnlock(o)
+          }
+          else Output.showNoKey()
+        }
+        case Barred => Output.showCantUnlockBars()
+      }
+    }
+    else if (!o.isOpen) Output.showAlreadyUnlocked(o)
+    else Output.showAlreadyOpened(o)
+  }
+
+  def tryTake(a: Option[Argument]) = {
+    a match {
+      case None => {
+        val items = state.currentWall.availItems
+        items.length match {
+          case 0 => Output.showNoItem()
+          case 1 => take(items.head)
+          case n if n > 1 => Output.showAmbiguousTake(items)
+        }
+      }
+      case Some(i: Item) => {
+        if (state.currentWall.availItems.contains(i)) take(i)
+        else Output.showInvalidTake()
+      }
+      case Some(x) => {
+        if (state.currentWall.availArguments.contains(x)) Output.showCantTake()
+        else Output.showInvalidTake()
+      }
+    }
+  }
+
+  def take(i: Item) = {
+    i.actions(TakeItem)
+      Output.showTakeItem(i)
   }
 
   //Takes the player back to the previous GameState (as long as there are more than 1 previous GameStates)
   def rewind() = {
     if (state.log.length > 1) {
-      state.lastState
+      state.actions(Rewind)
       Output.showRewind()
     } else Output.showBlockRewind()
   }
@@ -184,7 +132,7 @@ class Engine(val state: GameState) {
       case Some(o: Openable) => open(o)
       case Some(x) => Output.showCantOpen(x)
       case None => {
-        val openables = availOpenables
+        val openables = state.currentWall.availOpenables
         openables.length match {
           case 0 => Output.showNoOpenable()
           case 1 => open(openables.head)
@@ -193,4 +141,19 @@ class Engine(val state: GameState) {
       }
     }
   }
+
+  def open(o: Openable) = {
+    o.lock match {
+      case _: KeyLock => Output.showKeyLocked()
+      case Barred => Output.showDoorBarred()
+      case Unlocked => {
+        if (!o.isOpen) {
+          o.actions(Open)
+          Output.showOpen(o)
+        }
+        else Output.showAlreadyOpened(o)
+      }
+    }
+  }
+
 }

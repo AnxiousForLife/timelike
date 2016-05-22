@@ -1,9 +1,8 @@
 package game
 
 //Connector for two Rooms, which are listed clockwise
-class Door(val room1: Room, val room2: Room, var lock: LockState) extends Argument(new Noun("door")) with Openable {
-  import PlayerAction._
+class Door(val room1: Room, val room2: Room, lock: LockState) extends Openable(new CountableNoun("door"), lock)
 
-  override val actions = Map(Open -> open())
-}
 class AngledDoor(override val room1: Room, override val room2: Room, lock: LockState) extends Door(room1, room2, lock)
+
+object Doorway extends Argument(new CountableNoun("doorway"))

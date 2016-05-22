@@ -7,6 +7,7 @@ class Noun(lemma: String) extends Lexeme(lemma) {
   def withDefinite = "the " ++ lemma
 }
 
+
 class CountableNoun(lemma: String) extends Noun(lemma) {
   def indefiniteArticle = {
     if(lemma.head == ("a", "e", "i", "o", "u")) "an"

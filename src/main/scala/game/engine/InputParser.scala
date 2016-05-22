@@ -31,53 +31,31 @@ object InputParser extends RegexParsers {
 
   val command: Parser[Command] = commit(/*prepositional | */ targeted | simple)
 
-  def parseAction(string: String): PlayerAction = {
+  def parseAction(string: String): (PlayerAction, Option[Argument]) = {
     val reader = new CharSequenceReader(string)
     command(reader) match {
       case Success(c: Command, input: Input) => {
         c match {
           //Turns
-          case SimpleCommand("left") => new Turn(Left)
-          case SimpleCommand("right") => new Turn(Right)
-          case TargetedCommand("turn", x) => new Turn(Argument.lookup(x))
+          case SimpleCommand("left") => (Turn, Some(Left))
+          case SimpleCommand("right") => (Turn, Some(Right))
+          case SimpleCommand("turn") => (Turn, None)
+          case TargetedCommand("turn", x) => (Turn, Some(Argument.lookup(x)))
 
           //Opening things
-          case SimpleCommand("open") => new Open(None)
-          case TargetedCommand("open", x) => new Open(Some(Argument.lookup(x)))
+          case SimpleCommand("open") => (Open, None)
+          case TargetedCommand("open", x) => (Open, Some(Argument.lookup(x)))
 
-          case SimpleCommand("take") => TakeItem
-          case TargetedCommand("take", x) => TakeItem
+          case SimpleCommand("take") => (TakeItem, None)
+          case TargetedCommand("take", x) => (TakeItem, Some(Argument.lookup(x)))
 
-          //Searching through things
-          case SimpleCommand("search") => new StartSearch(None)
-          case TargetedCommand("search", x) => new StartSearch(Some(Argument.lookup(x)))
+          case SimpleCommand("rewind") => (Rewind, None)
 
-          case SimpleCommand("rewind") => Rewind
-
-          case _ => InvalidAction
+          case _ => (InvalidAction, None)
         }
       }
-      case Failure(msg, _) => InvalidAction
-      case Error(msg, _) => InvalidAction
-    }
-  }
-
-  def parseSearchAction(string: String): PlayerAction = {
-    val reader = new CharSequenceReader(string)
-    command(reader) match {
-      case Success(c: Command, input: Input) => {
-        if (input == "") c match {
-          //Stopping the search
-          case SimpleCommand("exit" | "leave" | "close" | "stop" | "quit") => StopSearch
-
-          //Navigating drawers
-          case SimpleCommand("prev" | "previous") | TargetedCommand("previous" | "prev", "drawer") => PrevDrawer
-          case SimpleCommand("next") | TargetedCommand("next", "drawer") => PrevDrawer
-        }
-        else InvalidAction
-      }
-      case Failure(msg, _) => InvalidAction
-      case Error(msg, _) => InvalidAction
+      case Failure(msg, _) => (InvalidAction, None)
+      case Error(msg, _) => (InvalidAction, None)
     }
   }
 }

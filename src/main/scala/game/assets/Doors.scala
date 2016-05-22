@@ -5,7 +5,7 @@ object Doors {
   import game.assets.Keys._
   import game.LockState._
 
-  object DoorTwelveOne$ extends AngledDoor(RoomTwelve, RoomOne, Unlocked)
+  object DoorTwelveOne extends AngledDoor(RoomTwelve, RoomOne, Unlocked)
 
   object DoorwayOneTwo extends Door(RoomOne, RoomTwo, KeyLock(Room2Key))
 

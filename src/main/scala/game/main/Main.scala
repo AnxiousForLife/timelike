@@ -11,8 +11,7 @@ object Main {
   def main(args: Array[String]) {
     val startRoom = RoomTwelve
     val startDirection = North
-    val startInventory = mutable.Set.empty[Item]
-    val startState = new GameState(Seq((startRoom, startDirection)), startRoom, startDirection, startInventory)
+    val startState = new GameState(Seq((startRoom, startDirection)), startRoom, startDirection)
 
     val engine = new Engine(startState)
 

@@ -5,17 +5,16 @@ sealed abstract class PlayerAction
 object PlayerAction {
   case object InvalidAction extends PlayerAction
 
-  case class Turn(arg: Argument) extends PlayerAction
+  case object Turn extends PlayerAction
 
-  case object OpenDoor extends PlayerAction
-  case class Open(arg: Option[Argument]) extends PlayerAction
+  case object Open extends PlayerAction
+
+  case object Enter extends PlayerAction
 
   case object TakeItem extends PlayerAction
+  case object PlaceItem extends PlayerAction
 
-  case class StartSearch(arg: Option[Argument]) extends PlayerAction
-  case object StopSearch extends PlayerAction
-  case object NextDrawer extends PlayerAction
-  case object PrevDrawer extends PlayerAction
+  case object Unlock extends PlayerAction
 
   case object Rewind extends PlayerAction
 }

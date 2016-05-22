@@ -4,5 +4,5 @@ object Keys {
   import game.assets.RoomWalls._
   import game.Key
 
-  object Room2Key extends Key("key", "a", Some("""with a numeral "2" engraved in it"""), WallOne0)
+  object Room2Key extends Key(WallOne0)
 }

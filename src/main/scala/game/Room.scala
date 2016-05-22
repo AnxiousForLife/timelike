@@ -23,3 +23,5 @@ abstract class Room(str: String, val outwardFace: Direction) extends Printable(s
     }
   }
 }
+
+object Room extends Argument(new CountableNoun("room"))

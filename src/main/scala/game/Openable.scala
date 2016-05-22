@@ -1,12 +1,12 @@
 package game
 
-
 sealed trait OpenState
 object Closed extends OpenState
 object Opened extends OpenState
 
 //Anything that can be opened
-class Openable(noun: Noun) extends Argument(noun) {
+abstract class Openable(noun: CountableNoun, var lock: LockState ) extends ConcreteArgument(noun) {
+  import game.LockState._
   import game.PlayerAction._
 
   var state: OpenState = Closed
@@ -16,5 +16,10 @@ class Openable(noun: Noun) extends Argument(noun) {
 
   def isOpen = state == Opened
 
-  actions(Open) = () => open()
+  def unlock() { lock = Unlocked }
+
+  def isUnlocked = lock == Unlocked
+
+  actions(Open) = (Any) => open _
+  actions(Unlock) = (Any) => unlock _
 }

@@ -3,19 +3,17 @@ package game.assets
 object RoomWalls {
   import game.assets.Doors._
   import game.assets.Keys._
-  import game.Drawer
-  import game.RoomObject._
   import game.RoomWall
 
   object WallTwelve0 extends RoomWall("There's a pair of large, rusted iron doors before you. Between the two handles is embossed the image of a snake eating its tail, with a keyhole for an eye", None, None)
-  object WallTwelve1 extends RoomWall("""There's an iron door with a numeral "1" engraved on it""", Some(DoorTwelveOne$), None)
+  object WallTwelve1 extends RoomWall("""There's an iron door with a numeral "1" engraved on it""", Some(DoorTwelveOne), None)
   object WallTwelve2 extends RoomWall("Here's the inner wall", None, None)
   object WallTwelve3 extends RoomWall("""There's an iron door with a numeral "11" engraved on it""", Some(DoorElevenTwelve$), None)
 
   object WallOne0 extends RoomWall("Here's the outer wall", None, None)
   object WallOne1 extends RoomWall("""There's an iron door with a numeral "2" engraved on it""", Some(DoorwayOneTwo), None)
   object WallOne2 extends RoomWall("Here's the inner wall", None, None)
-  object WallOne3 extends RoomWall("""There's an iron door with a numeral "12" engraved on it""", Some(DoorTwelveOne$), None)
+  object WallOne3 extends RoomWall("""There's an iron door with a numeral "12" engraved on it""", Some(DoorTwelveOne), None)
 
   object WallTwo0 extends RoomWall("Here's the outer wall", None, None)
   object WallTwo1 extends RoomWall("""There's an iron door with a numeral "3" engraved on it""", Some(DoorTwoThree$), None)
