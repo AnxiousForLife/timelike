@@ -7,7 +7,6 @@ object Opened extends OpenState
 //Anything that can be opened
 abstract class Openable(noun: CountableNoun, var lock: LockState ) extends ConcreteArgument(noun) {
   import game.LockState._
-  import game.PlayerAction._
 
   var state: OpenState = Closed
 
@@ -19,7 +18,4 @@ abstract class Openable(noun: CountableNoun, var lock: LockState ) extends Concr
   def unlock() { lock = Unlocked }
 
   def isUnlocked = lock == Unlocked
-
-  actions(Open) = (Any) => open _
-  actions(Unlock) = (Any) => unlock _
 }

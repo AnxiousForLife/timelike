@@ -3,13 +3,8 @@ package game
 import scala.collection.mutable
 
 class Item(override val noun: CountableNoun, var location: ItemLocation) extends ConcreteArgument(noun) {
-  import PlayerAction._
-
   def place(l: ItemLocation) = { location = l }
   def take() = place(Inventory)
-
-  actions(PlaceItem) = (Any) => place _
-  actions(TakeItem) = (Any) => take _
 
   Item.update(this)
 }

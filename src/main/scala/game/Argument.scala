@@ -4,8 +4,6 @@ import scala.collection.mutable
 
 //Anything that can be the argument of a sentence
 class Argument(val lexeme: Lexeme) {
-  val actions = mutable.Map.empty[PlayerAction, (Any) => (Any)]
-
   override def toString = lexeme.lemma
 
   Argument.update(this)

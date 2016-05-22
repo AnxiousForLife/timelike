@@ -9,7 +9,6 @@ class Engine(val state: GameState) {
 
   def gameLoop() = {
     while (keepRunning) {
-      println(s"${state.direction}")
       Output.showState(state)
 
       val input = getInput()
@@ -35,7 +34,7 @@ class Engine(val state: GameState) {
     a match {
       case None => Output.showAmbiguousDirection()
       case Some(rd: RelativeDirection) => {
-        state.actions(Turn)(rd)
+        state.turn(rd)
         Output.showTurn(rd)
       }
       case Some(a) => Output.showNotADirection(a)
@@ -81,7 +80,7 @@ class Engine(val state: GameState) {
         case Unlocked => println("ERROR: Already Unlocked.")
         case k: KeyLock => {
           if (Inventory.contains(k.key)) {
-            o.actions(Unlock)
+            o.unlock()
             Output.showUnlock(o)
           }
           else Output.showNoKey()
@@ -115,14 +114,14 @@ class Engine(val state: GameState) {
   }
 
   def take(i: Item) = {
-    i.actions(TakeItem)
+    i.take()
       Output.showTakeItem(i)
   }
 
   //Takes the player back to the previous GameState (as long as there are more than 1 previous GameStates)
   def rewind() = {
     if (state.log.length > 1) {
-      state.actions(Rewind)
+      state.lastState()
       Output.showRewind()
     } else Output.showBlockRewind()
   }
@@ -148,7 +147,7 @@ class Engine(val state: GameState) {
       case Barred => Output.showDoorBarred()
       case Unlocked => {
         if (!o.isOpen) {
-          o.actions(Open)
+          o.open()
           Output.showOpen(o)
         }
         else Output.showAlreadyOpened(o)

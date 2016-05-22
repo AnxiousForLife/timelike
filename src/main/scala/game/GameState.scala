@@ -2,8 +2,6 @@ package game
 
 //The game state, containing a log of all the past player locations and the current player location
 class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction) extends Argument(new Noun("game")) {
-  import PlayerAction._
-
   def currentWall = room.currentWall(direction)
 
   def updateLog() { log :+= (room, direction) }
@@ -16,7 +14,7 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
     updateLog()
   }
 
-  def turn(rd: RelativeDirection) = updateDirection(direction.turn(rd))
+  def turn(rd: Any) = updateDirection(direction.turn(rd.asInstanceOf[RelativeDirection]))
 
   def enterRoom(door: Door) = {
     //Is the player moving clockwise?/Does the player change direction in the next room?
@@ -39,8 +37,4 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
     room = log.last._1
     direction = log.last._2
   }
-
-  actions(Turn) = (Any) => turn _
-  actions(Enter) = (Any) => enterRoom _
-  actions(Rewind) = (Any) => lastState _
 }
