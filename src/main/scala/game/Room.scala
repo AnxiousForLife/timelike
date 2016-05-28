@@ -1,7 +1,9 @@
 package game
 
+import game.syntaxEn.Noun
+
 //The game rooms and the direction their outer wall faces
-abstract class Room(str: String, val outwardFace: Direction) extends Printable(str) {
+abstract class Room(val outwardFace: Direction) extends Argument(new Noun("room")) {
   val wall0: RoomWall
   val wall1: RoomWall
   val wall2: RoomWall
@@ -23,5 +25,3 @@ abstract class Room(str: String, val outwardFace: Direction) extends Printable(s
     }
   }
 }
-
-object Room extends Argument(new CountableNoun("room"))

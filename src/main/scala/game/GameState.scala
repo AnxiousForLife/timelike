@@ -1,5 +1,7 @@
 package game
 
+import game.syntaxEn.Noun
+
 //The game state, containing a log of all the past player locations and the current player location
 class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction) extends Argument(new Noun("game")) {
   def currentWall = room.currentWall(direction)

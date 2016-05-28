@@ -1,27 +1,16 @@
 package game
 
-import scala.collection.mutable
+import game.syntaxEn.{AdjectivePhrase, CountableNoun, Lexeme, PrepositionalPhrase}
 
-//Anything that can be the argument of a sentence
+//Anything that can be the grammatical argument of a sentence
 class Argument(val lexeme: Lexeme) {
-  override def toString = lexeme.lemma
-
-  Argument.update(this)
+  override def toString = lexeme.toString
 }
 
+//Any real-world object (referred to by a countable noun) that the player can interact with
+class ConcreteArgument(val noun: CountableNoun,
+                       val ap: Option[AdjectivePhrase],
+                       val pp: Option[PrepositionalPhrase]) extends Argument(noun)
+
+//Used if the player tries to supply an argument not in the game
 class DummyArgument(lexeme: Lexeme) extends Argument(lexeme)
-
-object Argument {
-  val map = mutable.Map.empty[String, Argument]
-
-  def update(a: Argument) { map(a.lexeme.lemma) = a }
-
-  def lookup(input: String): Argument = map.getOrElse(input, new DummyArgument(new Lexeme(input)))
-
-  update(RelativeDirection.Left)
-  update(RelativeDirection.Right)
-}
-
-class ConcreteArgument(val noun: CountableNoun) extends Argument(noun)
-
-class Cabinet(lock: LockState) extends Openable(new CountableNoun("cabinet"), lock) with ItemLocation

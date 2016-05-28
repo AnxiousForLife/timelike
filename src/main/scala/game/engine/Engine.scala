@@ -1,32 +1,55 @@
 package game.engine
 
-import game._
+import game.{Argument, _}
 import game.LockState._
 import game.PlayerAction._
 
 class Engine(val state: GameState) {
+  Output.showTitle()
+  pressAnyKeyTitle()
+
+  Output.showFOV(state)
+
   var keepRunning = true
 
   def gameLoop() = {
     while (keepRunning) {
-      Output.showState(state)
-
       val input = getInput()
-      matchAction(InputParser.parseAction(input))
+      matchAction(InputParser.parseAction(input, state.currentWall))
     }
   }
 
-  def getInput() = scala.io.StdIn.readLine().toLowerCase
+  def pressAnyKeyTitle() = {
+    Output.showReturnTitle()
+    Console.in.read.toChar
+  }
 
-  def matchAction(a: (PlayerAction, Option[Argument])) = {
+  def pressAnyKeyShort() = {
+    Output.showReturnShort()
+    Console.in.read.toChar
+  }
+
+  def getInput() = scala.io.StdIn.readLine().toLowerCase.trim()
+
+  def matchAction(a: PlayerAction) = {
     a match {
-      case (InvalidAction, _) => Output.showInvalid()
-      case (Turn, x) => tryTurn(x)
-      case (Open, x) => tryOpen(x)
-      case (Enter, x) => tryEnter(x)
-      case (TakeItem, x) => tryTake(x)
-      case (Unlock, x) => tryUnlock(x)
-      case (Rewind, _) => rewind()
+      case InvalidAction => Output.showInvalid()
+      case x: Examine =>
+      case x: Turn => tryTurn(x.arg)
+      case x: Open => tryOpen(x.arg)
+      case x: Close => tryClose(x.arg)
+      case x: Enter => tryEnter(x.arg)
+      case x: TakeItem => tryTake(x.arg)
+      case x: Unlock => tryUnlock(x.arg)
+      case x: Pull => tryPull(x.arg)
+      case Rewind => rewind()
+    }
+  }
+
+  def examine(a: Option[Argument]) = {
+    a match {
+      case None => Output.showFOV(state)
+      case Some(a) => Output.showFOV(state)
     }
   }
 
@@ -36,6 +59,7 @@ class Engine(val state: GameState) {
       case Some(rd: RelativeDirection) => {
         state.turn(rd)
         Output.showTurn(rd)
+        Output.showFOV(state)
       }
       case Some(a) => Output.showNotADirection(a)
     }
@@ -43,13 +67,14 @@ class Engine(val state: GameState) {
 
   def tryEnter(a: Option[Argument]) = {
     a match {
-      case Some(Room) | Some(Doorway) | None => {
+      case Some(_: Room) | None => {
         state.currentWall.door match {
           case None => Output.showNoExit()
           case Some(door: Door) => {
             if (door.isOpen) {
               state.enterRoom(door)
               Output.showEnterRoom()
+              Output.showFOV(state)
             }
             else Output.showDoorClosed()
           }
@@ -104,11 +129,11 @@ class Engine(val state: GameState) {
       }
       case Some(i: Item) => {
         if (state.currentWall.availItems.contains(i)) take(i)
-        else Output.showInvalidTake()
+        else Output.showUnavailableArgument()
       }
       case Some(x) => {
         if (state.currentWall.availArguments.contains(x)) Output.showCantTake()
-        else Output.showInvalidTake()
+        else Output.showUnavailableArgument()
       }
     }
   }
@@ -116,6 +141,10 @@ class Engine(val state: GameState) {
   def take(i: Item) = {
     i.take()
       Output.showTakeItem(i)
+  }
+
+  def place(i: Item) = {
+
   }
 
   //Takes the player back to the previous GameState (as long as there are more than 1 previous GameStates)
@@ -129,7 +158,10 @@ class Engine(val state: GameState) {
   def tryOpen(a: Option[Argument]) = {
     a match {
       case Some(o: Openable) => open(o)
-      case Some(x) => Output.showCantOpen(x)
+      case Some(x) => {
+        if (state.currentWall.arguments.contains(x)) Output.showCantOpen()
+        Output.showUnavailableArgument()
+      }
       case None => {
         val openables = state.currentWall.availOpenables
         openables.length match {
@@ -155,4 +187,48 @@ class Engine(val state: GameState) {
     }
   }
 
+  def tryClose(a: Option[Argument]) = {
+    a match {
+      case Some(o: Openable) => close(o)
+      case Some(x) => {
+        if (state.currentWall.arguments.contains(x)) Output.showCantClose()
+        Output.showUnavailableArgument()
+      }
+      case None => {
+        val closeables = state.currentWall.availOpenables
+        closeables.length match {
+          case 0 => Output.showNoCloseable()
+          case 1 => close(closeables.head)
+          case n if n > 1 => Output.showAmbiguousClose(closeables)
+        }
+      }
+    }
+  }
+
+  def close(o: Openable) = {
+    if (o.isOpen) {
+      o.close()
+      Output.showClose(o)
+    } else Output.showAlreadyClosed(o)
+  }
+
+  def tryPull(a: Option[Argument]) = {
+    a match {
+      case Some(l: Lever) => pullLever(l)
+      case Some(x) => Output.showCantOpen()
+      case None => {
+        val levers = state.currentWall.availLevers
+        levers.length match {
+          case 0 => Output.showNoLever()
+          case 1 => pullLever(levers.head)
+          case n if n > 1 => Output.showAmbiguousPull(levers)
+        }
+      }
+    }
+  }
+
+  def pullLever(l: Lever) = {
+    l.pull()
+    Output.showPull()
+  }
 }

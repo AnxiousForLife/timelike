@@ -1,6 +1,9 @@
 package game.assets
 
-import game.Item
+import game.syntaxEn.CountableNoun
+import game.{Inventory, Item}
 
-//object Compass extends Item("compass", "a", None)
-//object Watch extends Item("watch", "a", None)
+object Items {
+  object Compass extends Item(new CountableNoun("compass"), None, None, Inventory)
+  object Watch extends Item(new CountableNoun("watch"), None, None, Inventory)
+}

@@ -1,5 +1,7 @@
 package game
 
+import game.syntaxEn.{Lexeme, Noun}
+
 sealed abstract class Direction(str: String) extends Printable(str) {
   import Direction._
   import RelativeDirection._
@@ -59,7 +61,7 @@ object Direction {
   case object NorthWest extends Direction("northwest")
 }
 
-sealed abstract class RelativeDirection(noun: Noun) extends Argument(noun)
+sealed abstract class RelativeDirection(val noun: Noun) extends Argument(noun)
 
 object RelativeDirection {
   case object Left extends RelativeDirection(new Noun("left"))

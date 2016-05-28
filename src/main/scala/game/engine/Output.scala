@@ -1,41 +1,51 @@
 package game.engine
 
-import game._
+import game.{Argument, _}
+import game.assets.Items.Compass
+import game.assets.Title
 import game.util.ListStrings
-import game.util.NumberToOrdinalWords
-
-import scala.collection.mutable
 
 object Output {
+  def showTitle() = println(Title.str)
+
+  def showReturnTitle() = {
+    val returnText = "[PRESS ENTER (↵)]"
+    val spacesAmt = Title.width - returnText.length
+    println(" " * spacesAmt ++ "[PRESS ENTER (↵)]")
+  }
+  def showReturnShort() = println("(↵)")
+
   def showInvalid() = println("That means nothing here.")
 
-  def showRoom(state: GameState) = {
-    val room = state.room
-    s"$room."
-  }
-
-  def showDirection(state: GameState): String = {
-    val dir = state.direction
-    s"You are facing $dir."
-  }
-
-  def showWall(state: GameState): String = state.currentWall.showText
-
-  def showArgument(state: GameState): String = state.currentWall.arguments.map(" There's " ++ _.noun.withIndefinite ++ ".").getOrElse("")
-
-  def showItems(state: GameState): String = {
-    state.currentWall.availItems match {
-      case Nil => ""
-      case items => {
-        val stringList: Seq[String] = for (x <- items) yield x.noun.withIndefinite
-        " There's " ++ ListStrings.listOr(stringList) ++ " here."
+  def showFOV(state: GameState) = {
+    val directionText: String = {
+      if (Inventory.contains(Compass)) s"You're facing ${state.direction}."
+      else ""
+    }
+    val doorText: String = {
+      state.currentWall.door match {
+        case None => ""
+        case Some(door: Door) => {
+          if (door.isOpen) " There's an open door."
+          else " There's " ++ door.noun.withIndefinite(door.adj1, door.adj2) ++ "."
+        }
       }
     }
-  }
 
-  //mkString combines the necessary strings, while the optional strings are appended separately.
-  def showState(state: GameState) {
-    println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".").mkString(" ") ++ showArgument(state) ++ showItems(state))
+    val argumentText: String = {
+      (for (x <- state.currentWall.arguments) yield (" There's " ++ x.noun.withIndefinite(None, None) ++ ".")).mkString(" ")
+    }
+
+    val itemsText: String = {
+      state.currentWall.availItems match {
+        case Nil => ""
+        case items => {
+          val stringList: Seq[String] = for (x <- items) yield x.noun.withIndefinite(None, None)
+          " There's " ++ ListStrings.listOr(stringList) ++ " here."
+        }
+      }
+    }
+    println((directionText ++ doorText ++ argumentText ++ itemsText).capitalize)
   }
 
   def showAmbiguousDirection() = {
@@ -51,15 +61,15 @@ object Output {
   }
 
   def showOpen(o: Openable) = {
-    println(s"${o.noun.withDefinite.capitalize} opens.")
+    println(s"You open ${o.noun.withDefinite}.")
   }
 
   def showAlreadyOpened(o: Openable) = {
     println(s"${o.noun.withDefinite.capitalize} is already open.")
   }
 
-  def showCantOpen(a: Argument) = {
-    println(s""""$a" is not a thing that can be opened.""")
+  def showCantOpen() = {
+    println("You can't open that.")
   }
 
   def showNoOpenable() = {
@@ -70,11 +80,33 @@ object Output {
   def showAmbiguousOpen(openables: Seq[Openable]) = {
     val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite
     val listOr = ListStrings.listOr(stringList)
-    println(s"You can open $listOr.")
+    println(s"You could open $listOr.")
+  }
+
+  def showClose(o: Openable) = {
+    println(s"You close ${o.noun.withDefinite}.")
+  }
+
+  def showAlreadyClosed(o: Openable) = {
+    println(s"${o.noun.withDefinite.capitalize} is already closed.")
+  }
+
+  def showCantClose() = {
+    println("You can't open that.")
+  }
+
+  def showNoCloseable() = {
+    println(s"There's nothing here to close.")
+  }
+
+  def showAmbiguousClose(openables: Seq[Openable]) = {
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite
+    val listOr = ListStrings.listOr(stringList)
+    println(s"Could close $listOr.")
   }
 
   def showNoExit() {
-    println("There's no exit here.")
+    println("There's exit here.")
   }
 
   def showEnterRoom() {
@@ -86,34 +118,34 @@ object Output {
   }
 
   def showCantEnter() {
-    println("Can't enter that.")
+    println("You can't enter that.")
   }
 
   def showNoItem() {
-    println("Nothing here to take.")
+    println("There's nothing here to take.")
   }
 
   //Prints a list of items the player can take if they don't specify what to take.
   def showAmbiguousTake(items: Seq[Item]) = {
     val stringList: Seq[String] = for (x <- items) yield x.noun.withDefinite
     val listOr = ListStrings.listOr(stringList)
-    println(s"You can take $listOr.")
+    println(s"You could take $listOr.")
   }
 
   def showTakeItem(x: Item) {
     println(s"You take the $x.")
   }
 
-  def showInvalidTake() {
-    println(s"Nothing like that here.")
+  def showUnavailableArgument() {
+    println(s"There's nothing like that here.")
   }
 
   def showCantTake() {
-    println(s"Can't take that.")
+    println(s"You can't take that.")
   }
 
   def showCantUnlock() {
-    println("Can't unlock that.")
+    println("You can't unlock that.")
   }
 
   def showKeyLocked() {
@@ -147,7 +179,21 @@ object Output {
   def showAmbiguousUnlock(openables: Seq[Openable]) = {
     val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite
     val listOr = ListStrings.listOr(stringList)
-    println(s"You can unlock $listOr.")
+    println(s"You could unlock $listOr.")
+  }
+
+  def showPull() = {
+    println(s"You pull the lever.")
+  }
+
+  def showNoLever() = {
+    println(s"There's nothing here to pull.")
+  }
+
+  def showAmbiguousPull(levers: Seq[Lever]) = {
+    val stringList: Seq[String] = for (x <- levers) yield x.noun.withDefinite
+    val listOr = ListStrings.listOr(stringList)
+    println(s"You could unlock $listOr.")
   }
 
   def showBlockRewind() {
