@@ -10,7 +10,9 @@ class Argument(val lexeme: Lexeme) {
 //Any real-world object (referred to by a countable noun) that the player can interact with
 class ConcreteArgument(val noun: CountableNoun,
                        val ap: Option[AdjectivePhrase],
-                       val pp: Option[PrepositionalPhrase]) extends Argument(noun)
+                       val pp: Option[PrepositionalPhrase]) extends Argument(noun) {
+  def
+}
 
 //Used if the player tries to supply an argument not in the game
 class DummyArgument(lexeme: Lexeme) extends Argument(lexeme)
