@@ -1,10 +1,8 @@
 package game
 
-import game.syntaxEn.{CountableNoun, In}
+import game.syntaxEn.{AdjectivePhrase, PrepositionalPhrase}
+import game.syntaxEn.Noun._
 
-object ChestNoun extends CountableNoun("chest")
-
-class Chest(lock: LockState, adj1: Option[String], adj2: Option[String]) extends Openable(ChestNoun, lock, adj1, adj2) with ItemLocation {
-  override val lPreposition = Some(In)
-  override val lNoun = Some(ChestNoun)
-}
+class Chest(lock: LockState,
+            override val ap: Option[AdjectivePhrase],
+            override val pp: Option[PrepositionalPhrase]) extends Container(ChestNoun, ap, pp)

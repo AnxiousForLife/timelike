@@ -1,6 +1,8 @@
 package game.engine
 
+import game.Direction._
 import game.{Argument, _}
+import game.assets.Objectives._
 import game.LockState._
 import game.PlayerAction._
 
@@ -8,14 +10,25 @@ class Engine(val state: GameState) {
   Output.showTitle()
   pressAnyKeyTitle()
 
-  Output.showFOV(state)
+  Output.showRoom(state)
 
   var keepRunning = true
 
   def gameLoop() = {
     while (keepRunning) {
-      val input = getInput()
+      unclearedObjectives()
+      val input = getInput
       matchAction(InputParser.parseAction(input, state.currentWall))
+    }
+  }
+
+  def unclearedObjectives() = {
+    state.room.objective match {
+      case None => {}
+      case Some(ExitFirstRoom) => {
+        if (state.direction == West) Output.showFirstWalk()
+        else {}
+      }
     }
   }
 
@@ -29,7 +42,7 @@ class Engine(val state: GameState) {
     Console.in.read.toChar
   }
 
-  def getInput() = scala.io.StdIn.readLine().toLowerCase.trim()
+  def getInput = scala.io.StdIn.readLine().toLowerCase.trim()
 
   def matchAction(a: PlayerAction) = {
     a match {
@@ -60,8 +73,12 @@ class Engine(val state: GameState) {
         state.turn(rd)
         Output.showTurn(rd)
         Output.showFOV(state)
+        state.room.objective match {
+          case Some(FirstTurn) => FirstTurn.clear()
+          case _ => {}
+        }
       }
-      case Some(a) => Output.showNotADirection(a)
+      case Some(x) => Output.showNotADirection(x)
     }
   }
 
@@ -70,13 +87,14 @@ class Engine(val state: GameState) {
       case Some(_: Room) | None => {
         state.currentWall.door match {
           case None => Output.showNoExit()
-          case Some(door: Door) => {
-            if (door.isOpen) {
-              state.enterRoom(door)
-              Output.showEnterRoom()
-              Output.showFOV(state)
+          case Some(doorway: Doorway) => {
+            doorway match {
+              case door: Door => {
+                if (door.isOpen) enter(door)
+                else Output.showDoorClosed()
+              }
+              case _ => enter(doorway)
             }
-            else Output.showDoorClosed()
           }
         }
       }
@@ -84,9 +102,19 @@ class Engine(val state: GameState) {
     }
   }
 
+  def enter(doorway: Doorway) = {
+    state.room.objective match {
+      case Some(ExitFirstRoom) => ExitFirstRoom.clear()
+      case _ => {}
+    }
+    state.enterRoom(doorway)
+    Output.showEnterRoom(doorway)
+    Output.showRoom(state)
+  }
+
   def tryUnlock(a: Option[Argument]) = {
     a match {
-      case Some(o: Openable) => unlock(o)
+      case Some(o: ConcreteArgument with Openable) => unlock(o)
       case None => {
         val openables = state.currentWall.availOpenables
         openables.length match {
@@ -99,7 +127,7 @@ class Engine(val state: GameState) {
     }
   }
 
-  def unlock(o: Openable) = {
+  def unlock(o: ConcreteArgument with Openable) = {
     if (!o.isUnlocked) {
       o.lock match {
         case Unlocked => println("ERROR: Already Unlocked.")
@@ -110,7 +138,7 @@ class Engine(val state: GameState) {
           }
           else Output.showNoKey()
         }
-        case Barred => Output.showCantUnlockBars()
+        case _: Barred => Output.showCantUnlockBars()
       }
     }
     else if (!o.isOpen) Output.showAlreadyUnlocked(o)
@@ -157,7 +185,7 @@ class Engine(val state: GameState) {
 
   def tryOpen(a: Option[Argument]) = {
     a match {
-      case Some(o: Openable) => open(o)
+      case Some(o: ConcreteArgument with Openable) => open(o)
       case Some(x) => {
         if (state.currentWall.arguments.contains(x)) Output.showCantOpen()
         Output.showUnavailableArgument()
@@ -173,14 +201,18 @@ class Engine(val state: GameState) {
     }
   }
 
-  def open(o: Openable) = {
+  def open(o: ConcreteArgument with Openable) = {
     o.lock match {
-      case _: KeyLock => Output.showKeyLocked()
-      case Barred => Output.showDoorBarred()
+      case _: KeyLock => Output.showKeyLocked(o)
+      case _: Barred => Output.showDoorBarred()
       case Unlocked => {
         if (!o.isOpen) {
           o.open()
           Output.showOpen(o)
+          o match {
+            case c: Container => {Output.showContents(c)}
+            case _ => {}
+          }
         }
         else Output.showAlreadyOpened(o)
       }
@@ -189,7 +221,7 @@ class Engine(val state: GameState) {
 
   def tryClose(a: Option[Argument]) = {
     a match {
-      case Some(o: Openable) => close(o)
+      case Some(o: ConcreteArgument with Openable) => close(o)
       case Some(x) => {
         if (state.currentWall.arguments.contains(x)) Output.showCantClose()
         Output.showUnavailableArgument()
@@ -205,7 +237,7 @@ class Engine(val state: GameState) {
     }
   }
 
-  def close(o: Openable) = {
+  def close(o: ConcreteArgument with Openable) = {
     if (o.isOpen) {
       o.close()
       Output.showClose(o)

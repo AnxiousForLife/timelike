@@ -18,20 +18,16 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
 
   def turn(rd: Any) = updateDirection(direction.turn(rd.asInstanceOf[RelativeDirection]))
 
-  def enterRoom(door: Door) = {
-    //Is the player moving clockwise?/Does the player change direction in the next room?
-    (room.outwardFace == direction.left.left, door) match {
-      case (true, _: AngledDoor) => {
-        updateRoom(door.room2)
-        updateDirection(direction.right)
-      }
-      case (false, _: AngledDoor) => {
-        updateRoom(door.room1)
-        updateDirection(direction.left)
-      }
-      case (true, _) => updateRoom(door.room2)
-      case (false, _) => updateRoom(door.room1)
+  def enterRoom(doorway: Doorway) = {
+    val orientation = room.orientations(direction)
+    val newRoom = {
+      if (room == doorway.room1) doorway.room2
+      else doorway.room1
     }
+    val newDirection = newRoom.directions(orientation)
+
+    updateDirection(newDirection)
+    updateRoom(newRoom)
   }
 
   def lastState() = {

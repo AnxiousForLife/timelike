@@ -4,6 +4,10 @@ import game.{PlayerAction, RoomWall}
 import game.PlayerAction._
 import game.RelativeDirection._
 
+import game.syntaxEn.Determiner
+import game.syntaxEn.Determiner._
+import game.syntaxEn.Preposition._
+
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.input.CharSequenceReader
 
@@ -18,6 +22,14 @@ final case class DitransitiveCommand(verb: String, obj1: String, obj2: String) e
 object InputParser extends RegexParsers {
   val word: Parser[String] = """[a-zA-Z]+""".r
 
+  /*val the: Parser[The] = "the" ^^^ The
+  val a: Parser[A] = "a" ^^^ A
+  val an: Parser[An] = "an" ^^^ An
+
+  val determiner: Parser[Determiner] = the | a | an
+
+  lazy val nounPhrase = (determiner ?) (adjectivePhrase ?)  noun ~ (prepositionalPhrase ?) ^^ {}*/
+
   val simple: Parser[IntransitiveCommand] = word ^^ (x => IntransitiveCommand(x))
 
   val targeted: Parser[TransitiveCommand] = word ~ word ^^ {
@@ -28,7 +40,7 @@ object InputParser extends RegexParsers {
     case verb ~ obj1 ~ obj2 => DitransitiveCommand(verb, obj1, obj2)
   }
 
-  val command: Parser[Command] = commit(/*prepositional | */ targeted | simple)
+  val command: Parser[Command] = commit(targeted | simple)
 
   def parseAction(string: String, roomWall: RoomWall): PlayerAction = {
     val reader = new CharSequenceReader(string)

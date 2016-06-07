@@ -1,28 +1,33 @@
 package game
 
 import game.syntaxEn._
+import game.syntaxEn.Determiner._
+import game.syntaxEn.Preposition._
 
-class RoomWall(val door: Option[Door], val arguments: Seq[ConcreteArgument]) extends ItemLocation {
-  val lPreposition = Some(On)
-  val lNoun = Some(new CountableNoun("floor"))
+class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) {
+  val floor = new ItemLocation(On, new NounPhrase(Some(The), None, new Noun("floor"), None))
 
   def availArguments: Seq[Argument] = door.toSeq ++ arguments ++ availItems :+ RelativeDirection.Left :+ RelativeDirection.Right
 
   def availItems: Seq[Item] = Item.list.filter(x => availLocations.contains(x.location)).toSeq
 
   def availLocations: Seq[ItemLocation] = {
-    val locations = Seq[ItemLocation](this)
+    var locations = Seq[ItemLocation](floor)
     for (x <- arguments) x match {
-      case o: ItemLocation with Openable => if(o.state == Opened) locations :+ o
+      case c: Container => if(c.state == Opened) locations = locations :+ c.interior
       case _ => {}
     }
     locations
   }
 
-  def availOpenables: Seq[Openable] = {
-    val openables = door.toSeq
+  def availOpenables: Seq[ConcreteArgument with Openable] = {
+    var openables = Seq.empty[ConcreteArgument with Openable]
+    door match {
+      case Some(d: Door) => openables = openables :+ d
+      case _ => {}
+    }
     for (x <- arguments) x match {
-      case o:  Openable => openables :+ o
+      case o:  Openable => openables = openables :+ o
       case _ => {}
     }
     openables

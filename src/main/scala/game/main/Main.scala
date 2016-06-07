@@ -1,14 +1,13 @@
 package game.main
 
-import game.Direction._
 import game.GameState
 import game.assets.Rooms._
 import game.engine.Engine
 
 object Main {
   def main(args: Array[String]) {
-    val startRoom = RoomTwelve
-    val startDirection = North
+    val startRoom = RoomFirst
+    val startDirection = startRoom.outwardFace.left.left
     val startState = new GameState(Seq((startRoom, startDirection)), startRoom, startDirection)
 
     val engine = new Engine(startState)

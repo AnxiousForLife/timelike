@@ -1,8 +1,23 @@
 package game.syntaxEn
 
+import game.syntaxEn.Determiner._
+
 class NounPhrase(det: Option[Determiner], ap: Option[AdjectivePhrase], n: Noun, pp: Option[PrepositionalPhrase]) {
-  override def toString: String =
-    det.fold("")(x => x.toString ++ " ") ++ ap.fold("")(x => x.toString ++ " ") ++ n.toString ++ pp.fold("")(x => " " ++ x.toString)
+  override def toString: String = withDet
+  def withDet: String = {
+    val getDet: String = det match {
+      case Some(A) => {
+        rest.head match {
+          case ('a' | 'e' | 'i' | 'o' | 'u') => An.toString ++ " "
+          case _ => A.toString ++ " "
+        }
+      }
+      case Some(x) => x.toString ++ " "
+      case None => ""
+    }
+    getDet ++ rest
+  }
+  def rest: String = ap.fold("")(x => x.toString ++ " ") ++ n.toString ++ pp.fold("")(x => " " ++ x.toString)
 }
 
 class ConjoinedNounPhrase(nps: Seq[NounPhrase], conj: Conjunction) {
