@@ -6,8 +6,8 @@ import game.engine.Engine
 
 object Main {
   def main(args: Array[String]) {
-    val startRoom = RoomFirst
-    val startDirection = startRoom.outwardFace.left.left
+    val startRoom = /*DungeonCell*/ RoomOne
+    val startDirection = /*startRoom.outwardDirection.left.left*/ startRoom.outwardDirection
     val startState = new GameState(Seq((startRoom, startDirection)), startRoom, startDirection)
 
     val engine = new Engine(startState)

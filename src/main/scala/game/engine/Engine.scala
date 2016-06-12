@@ -1,12 +1,16 @@
 package game.engine
 
-import game.Direction._
 import game.{Argument, _}
 import game.assets.Objectives._
 import game.LockState._
 import game.PlayerAction._
+import game.RelativeDirection._
+import game.assets.{Items, Keys}
 
 class Engine(val state: GameState) {
+  Keys.list.foreach(x => Item.update(x))
+  Items.list.foreach(x => Item.update(x))
+
   Output.showTitle()
   pressAnyKeyTitle()
 
@@ -23,11 +27,14 @@ class Engine(val state: GameState) {
   }
 
   def unclearedObjectives() = {
-    state.room.objective match {
+    state.currentWall.objective match {
       case None => {}
-      case Some(ExitFirstRoom) => {
-        if (state.direction == West) Output.showFirstWalk()
-        else {}
+      case Some(o) => {
+        if (!o.isCleared) o match {
+          case ExitFirstRoom => Output.showFirstWalk()
+          case FirstTurn => Output.showFirstTurn()
+          case ClearGame => Output.showEscape()
+        }
       }
     }
   }
@@ -47,7 +54,7 @@ class Engine(val state: GameState) {
   def matchAction(a: PlayerAction) = {
     a match {
       case InvalidAction => Output.showInvalid()
-      case x: Examine =>
+      case x: Examine => examine(x.arg)
       case x: Turn => tryTurn(x.arg)
       case x: Open => tryOpen(x.arg)
       case x: Close => tryClose(x.arg)
@@ -62,7 +69,7 @@ class Engine(val state: GameState) {
   def examine(a: Option[Argument]) = {
     a match {
       case None => Output.showFOV(state)
-      case Some(a) => Output.showFOV(state)
+      case Some(_) => Output.showFOV(state)
     }
   }
 
@@ -70,13 +77,18 @@ class Engine(val state: GameState) {
     a match {
       case None => Output.showAmbiguousDirection()
       case Some(rd: RelativeDirection) => {
+        state.currentWall.objective match {
+          case Some(FirstTurn) => {
+            rd match {
+              case Right => FirstTurn.clear()
+              case _ => {}
+            }
+          }
+          case _ => {}
+        }
         state.turn(rd)
         Output.showTurn(rd)
         Output.showFOV(state)
-        state.room.objective match {
-          case Some(FirstTurn) => FirstTurn.clear()
-          case _ => {}
-        }
       }
       case Some(x) => Output.showNotADirection(x)
     }
@@ -103,7 +115,7 @@ class Engine(val state: GameState) {
   }
 
   def enter(doorway: Doorway) = {
-    state.room.objective match {
+    state.currentWall.objective match {
       case Some(ExitFirstRoom) => ExitFirstRoom.clear()
       case _ => {}
     }
@@ -246,7 +258,7 @@ class Engine(val state: GameState) {
 
   def tryPull(a: Option[Argument]) = {
     a match {
-      case Some(l: Lever) => pullLever(l)
+      case Some(l: PullChain) => pullLever(l)
       case Some(x) => Output.showCantOpen()
       case None => {
         val levers = state.currentWall.availLevers
@@ -259,7 +271,7 @@ class Engine(val state: GameState) {
     }
   }
 
-  def pullLever(l: Lever) = {
+  def pullLever(l: PullChain) = {
     l.pull()
     Output.showPull()
   }

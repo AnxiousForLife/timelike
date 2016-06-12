@@ -2,10 +2,11 @@ package game.engine
 
 import game.LockState.Barred
 import game.{Argument, _}
-import game.assets.Items.Compass
+import game.assets.Items._
 import game.assets.Title
-import game.syntaxEn.CountableNoun
-import game.util.ListStrings
+import game.syntaxEn.Verb.Lie
+import game.syntaxEn._
+import game.util.{ListStrings, OptionStrings}
 
 import scala.Console.{BOLD, RESET}
 
@@ -23,50 +24,61 @@ object Output {
 
   def showInvalid() = printIndent("That means nothing here.")
 
-  def directionText(state: GameState): String = {
-    if (Inventory.contains(Compass)) s"You face ${state.direction}."
-    else ""
+  def directionText(state: GameState): Option[String] = {
+    if (Inventory.contains(Compass)) Some(s"You face ${state.direction}.")
+    else None
   }
 
   def fovText(state: GameState): String = {
-    val doorText: String = {
+    val doorText: Option[String] = {
       state.currentWall.door match {
-        case None => ""
+        case None => None
         case Some(doorway: Doorway) => {
           doorway match {
             case door: Door => {
-              if (door.isOpen) "There's an open door before you."
+              if (door.isOpen) Some("There's an open door before you.")
               else {
                 door.lock match {
-                  case x: Barred => "There's " ++ door.npIndefinite.toString ++ " before you," +
-                    s" but it's blocked by iron bars with images of ${new CountableNoun(x.symbol).plural} engraved on them."
-                  case _ => "There's " ++ door.npIndefinite.toString ++ " before you."
+                  case x: Barred => Some("There's " ++ door.npIndefinite.toString ++ " before you," +
+                    s" but it's blocked by iron bars with images of ${new SingularNoun(x.symbol).plural} engraved on them.")
+                  case _ => Some("There's " ++ door.npIndefinite.toString ++ " before you.")
                 }
               }
             }
-            case _: BalconyWalkway => "The path continues this way."
-            case _ => "There's " ++ doorway.npIndefinite.toString ++ " before you."
+            case _: BalconyWalkway => Some("The path continues this way.")
+            case _ => Some("There's " ++ doorway.npIndefinite.toString ++ " before you.")
           }
         }
       }
     }
 
-    val argumentText: String = {
-      (for (x <- state.currentWall.arguments) yield " There's " ++ x.show ++ ".").mkString(" ")
+    def locationItems(l: ItemLocation): Option[String] = {
+      if (l.items.isEmpty) None
+      else if (state.currentWall.availLocations.contains(l))
+        Some(new VerbPhrase(Present,
+          new ConjoinedNounPhrase(for(i <- l.items) yield i.npIndefinite, And), Lie, l.toPp).ppFirst.capitalize ++ ".")
+      else None
     }
 
-    val itemsText: String = {
-      state.currentWall.availItems match {
-        case Nil => ""
-        case items => {
-          val stringList: Seq[String] = for (x <- items) yield x.npIndefinite.toString
-          " There's " ++ ListStrings.listOr(stringList) ++ " here."
-        }
+    val wallItemsText: Option[String] = {
+      val string = locationItems(state.currentWall.floor).getOrElse("")
+      if (string.isEmpty) None else Some(string)
+    }
+
+    def showItems(a: ConcreteArgument): Option[String] = {
+      val string = OptionStrings.concat(for (l <- a.locations) yield locationItems(l))
+      if (string.isEmpty) None else Some(string)
+    }
+
+    val argumentText: Option[String] = {
+      state.currentWall.arguments match {
+        case Nil => None
+        case arguments => Some((for (x <- arguments) yield OptionStrings.concat(Seq(Some(x.show.capitalize ++ "."), showItems(x)))).mkString(" "))
       }
     }
 
     val allArguments: String = {
-      val all = doorText ++ argumentText ++ itemsText
+      val all = OptionStrings.concat(Seq(doorText, wallItemsText, argumentText))
       all.length match {
         case 0 => "There's nothing before you."
         case _ => all
@@ -77,18 +89,16 @@ object Output {
   }
 
   def showRoom(state: GameState) = {
-    val raw = {
-      state.room match {
-        case _: Room with Balcony => s"||-You stand outside on a balcony. ${fovText(state)}"
-        case _ => s"||-${directionText(state)} You're in a ${state.room.description}. ${fovText(state)}"
-      }
-    }
-    println("_" * raw.length + s"\n$raw")
+    val head = if (Inventory.contains(Map)) s"||${state.room.name.split(' ').map(_.capitalize).mkString(" ")}||-" else "||-"
+    val raw = s"$head${OptionStrings.concat(Seq(directionText(state), Some(state.room.description.capitalize), Some(fovText(state))))}"
+    println("_" * Title.width + s"\n$raw")
   }
 
-  def showFOV(state: GameState) = printIndent(directionText(state) ++ " " ++ fovText(state))
+  def showFOV(state: GameState) = printIndent(OptionStrings.concat(Seq(directionText(state), Some(fovText(state)))))
 
   def showFirstWalk() = printIndent(s"An urge to " + BOLD + "walk forward" + RESET + ".")
+  def showFirstTurn() = printIndent(s"An urge to " + BOLD + "turn right" + RESET + ".")
+  def showEscape() = printIndent(s"An urge to escape.")
 
   def showContents(c: Container) = {
     val text = c.contents match {
@@ -251,7 +261,7 @@ object Output {
     printIndent(s"There's nothing here to pull.")
   }
 
-  def showAmbiguousPull(levers: Seq[Lever]) = {
+  def showAmbiguousPull(levers: Seq[PullChain]) = {
     val stringList: Seq[String] = for (x <- levers) yield x.noun.withDefinite.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could unlock $listOr.")

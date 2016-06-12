@@ -2,23 +2,20 @@ package game.assets
 
 import game.Direction._
 import game.{Balcony, Room}
-import game.assets.Objectives._
 import game.assets.RoomWalls._
 
 object Rooms{
-  object RoomFirst extends Room(North) {
-    override val description = "small stone room"
+  object DungeonCell extends Room(North, "dungeon cell") {
+    override val description = "you're in a small stone room."
 
     override lazy val wall0 = WallFirst0
     override lazy val wall1 = WallFirst1
     override lazy val wall2 = WallFirst2
     override lazy val wall3 = WallFirst3
-
-    override val objective = Some(ExitFirstRoom)
   }
 
-  object RoomSecond extends Room(North) {
-    override val description = "small stone room"
+  object DungeonAccess extends Room(North, "dungeon access") {
+    override val description = "you're in a small stone room."
 
     override lazy val wall0 = WallSecond0
     override lazy val wall1 = WallSecond1
@@ -26,8 +23,8 @@ object Rooms{
     override lazy val wall3 = WallSecond3
   }
 
-  object RoomTwelve extends Room(North) {
-    override val description = "stone room. Tall tree trunks reach like slender fingers from the dirt floor to the ceiling"
+  object RoomTwelve extends Room(North, "room twelve") {
+    override val description = "you're in a stone room. Tall tree trunks reach like slender fingers from the dirt floor to the ceiling."
 
     override lazy val wall0 = WallTwelve0
     override lazy val wall1 = WallTwelve1
@@ -35,7 +32,7 @@ object Rooms{
     override lazy val wall3 = WallTwelve3
   }
 
-  object RoomEnd extends Room(North) {
+  object RoomEnd extends Room(North, "") {
     override val description = ""
 
     override lazy val wall0 = WallEnd0
@@ -44,8 +41,8 @@ object Rooms{
     override lazy val wall3 = WallEnd3
   }
 
-  object RoomOne extends Room(NorthEast) {
-    override val description = "stone room. The dirt on the floor is brushed away to reveal a stone path leading out from the trees."
+  object RoomOne extends Room(NorthEast, "room one") {
+    override val description = "you're in a stone room. The dirt on the floor is brushed away to reveal a stone path leading out from the trees."
 
     override lazy val wall0 = WallOne0
     override lazy val wall1 = WallOne1
@@ -53,8 +50,8 @@ object Rooms{
     override lazy val wall3 = WallOne3
   }
 
-  object RoomTwo extends Room(NorthEast) {
-    override val description = "room lol"
+  object RoomTwo extends Room(NorthEast, "room two") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallTwo0
     override lazy val wall1 = WallTwo1
@@ -62,8 +59,8 @@ object Rooms{
     override lazy val wall3 = WallTwo3
   }
 
-  object RoomThree extends Room(East) {
-    override val description = "room lol"
+  object RoomThree extends Room(East, "room three") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallThree0
     override lazy val wall1 = WallThree1
@@ -71,17 +68,17 @@ object Rooms{
     override lazy val wall3 = WallThree3
   }
 
-  object SecretRoomThree extends Room(East) {
-    override val description = "room lol"
+  object SecretRoomThree extends Room(East, "storage room three") {
+    override val description = "you're in a room lol."
 
-    override lazy val wall0 = WallSecret0
-    override lazy val wall1 = WallSecret1
-    override lazy val wall2 = WallSecret2
-    override lazy val wall3 = WallSecret3
+    override lazy val wall0 = WallStorageThree0
+    override lazy val wall1 = WallStorageThree1
+    override lazy val wall2 = WallStorageThree2
+    override lazy val wall3 = WallStorageThree3
   }
 
-  object RoomFour extends Room(SouthEast) {
-    override val description = "room lol"
+  object RoomFour extends Room(SouthEast, "room four") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallFour0
     override lazy val wall1 = WallFour1
@@ -89,26 +86,26 @@ object Rooms{
     override lazy val wall3 = WallFour3
   }
 
-  object ClosetAccess extends Room(SouthEast) {
-    override val description = "room lol"
+  object StorageAccess extends Room(SouthEast, "storage access") {
+    override val description = "you're in a room lol."
 
-    override lazy val wall0 = WallClosetAccess0
-    override lazy val wall1 = WallClosetAccess1
-    override lazy val wall2 = WallClosetAccess2
-    override lazy val wall3 = WallClosetAccess3
+    override lazy val wall0 = WallStorageAccess0
+    override lazy val wall1 = WallStorageAccess1
+    override lazy val wall2 = WallStorageAccess2
+    override lazy val wall3 = WallStorageAccess3
   }
 
-  object Closet extends Room(SouthEast) {
-    override val description = "room lol"
+  object StorageRoomFour extends Room(SouthEast, "storage room four") {
+    override val description = "you're in a room lol."
 
-    override lazy val wall0 = WallCloset0
-    override lazy val wall1 = WallCloset1
-    override lazy val wall2 = WallCloset2
-    override lazy val wall3 = WallCloset3
+    override lazy val wall0 = WallStorageFour0
+    override lazy val wall1 = WallStorageFour1
+    override lazy val wall2 = WallStorageFour2
+    override lazy val wall3 = WallStorageFour3
   }
 
-  object RoomFive extends Room(SouthEast) {
-    override val description = "room lol"
+  object RoomFive extends Room(SouthEast, "room five") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallFive0
     override lazy val wall1 = WallFive1
@@ -116,8 +113,8 @@ object Rooms{
     override lazy val wall3 = WallFive3
   }
 
-  object RoomSix extends Room(South) {
-    override val description = "room six"
+  object RoomSix extends Room(South, "room six") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallSix0
     override lazy val wall1 = WallSix1
@@ -125,8 +122,8 @@ object Rooms{
     override lazy val wall3 = WallSix3
   }
 
-  object RoomSixAccess extends Room(South) {
-    override val description = "room six access"
+  object AtriumHallA extends Room(South, "atrium hall a") {
+    override val description = "you're in a room with walls of bronze."
 
     override lazy val wall0 = WallSixAccess0
     override lazy val wall1 = WallSixAccess1
@@ -134,8 +131,8 @@ object Rooms{
     override lazy val wall3 = WallSixAccess3
   }
 
-  object RoomCenterAccess extends Room(South) {
-    override val description = "room center access"
+  object AtriumHallB extends Room(South, "atrium hall b") {
+    override val description = "you're in a room with walls of bronze."
 
     override lazy val wall0 = WallCenterAccess0
     override lazy val wall1 = WallCenterAccess1
@@ -143,8 +140,14 @@ object Rooms{
     override lazy val wall3 = WallCenterAccess3
   }
 
-  object RoomCenter extends Room(South) {
-    override val description = "room center"
+  object RoomCenter extends Room(South, "atrium") {
+    override val description = "you walk into a great, brightly lit room, walled off by a cylinder of glass, which" +
+      " extends endlessly up and down. You stand upon a firm floor of glowing sand, and you look to see a great" +
+      " ceiling of sand impossibly suspended above you. In fact, the whole of the glass room is suspended in a sea of" +
+      " glowing sand, which envelopes you in a soft white-golden light. Slender, white-barked trees reach up from the" +
+      " sand below you and down from the ceiling above you, like bony hands too far apart to reach one another. Rays" +
+      " of light pierce through their fingers and illuminate glittering grains of sand drifting down from the ceiling" +
+      " like dust."
 
     override lazy val wall0 = WallCenterRoom0
     override lazy val wall1 = WallCenterRoom1
@@ -153,8 +156,8 @@ object Rooms{
   }
 
 
-  object RoomSeven extends Room(SouthWest) {
-    override val description = "room lol"
+  object RoomSeven extends Room(SouthWest, "room seven") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallSeven0
     override lazy val wall1 = WallSeven1
@@ -162,8 +165,8 @@ object Rooms{
     override lazy val wall3 = WallSeven3
   }
 
-  object RoomEight extends Room(SouthWest) {
-    override val description = "room lol"
+  object RoomEight extends Room(SouthWest, "room eight") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallEight0
     override lazy val wall1 = WallEight1
@@ -171,8 +174,13 @@ object Rooms{
     override lazy val wall3 = WallEight3
   }
 
-  object SouthBalcony extends Room(SouthWest) with Balcony {
-    override val description = "balcony"
+  object SouthBalcony extends Room(SouthWest, "south balcony") with Balcony {
+    override val description = "you stand outside on a balcony. It's night. The air is hot and still. Beyond the metal" +
+      " railing stretches a vast sea, a black sea, blanketed with a still fog. Across the sea stand slender tree trunks," +
+      " bare, perfectly straight, all sprouting endlessly upward. Just over the horizon, a grey, dead moon hangs in the" +
+      " sky, shrouded in a dim halo of foggy light. But above the moon, where the night sky should continue, shines the" +
+      " dim glow of rippling water in the fog, as if the whole of the world were submerged just below another body of" +
+      " water."
 
     override lazy val wall0 = WallSouthBalcony0
     override lazy val wall1 = WallSouthBalcony1
@@ -180,8 +188,8 @@ object Rooms{
     override lazy val wall3 = WallSouthBalcony3
   }
 
-  object RoomNine extends Room(West) {
-    override val description = "room lol"
+  object RoomNine extends Room(West, "room nine") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallNine0
     override lazy val wall1 = WallNine1
@@ -189,17 +197,8 @@ object Rooms{
     override lazy val wall3 = WallNine3
   }
 
-  object MidBalcony extends Room(West) with Balcony {
-    override val description = "balcony"
-
-    override lazy val wall0 = WallMidBalcony0
-    override lazy val wall1 = WallMidBalcony1
-    override lazy val wall2 = WallMidBalcony2
-    override lazy val wall3 = WallMidBalcony3
-  }
-
-  object RoomTen extends Room(NorthWest) {
-    override val description = "room lol"
+  object RoomTen extends Room(NorthWest, "room ten") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallTen0
     override lazy val wall1 = WallTen1
@@ -207,8 +206,9 @@ object Rooms{
     override lazy val wall3 = WallTen3
   }
 
-  object NorthBalcony extends Room(NorthWest) with Balcony {
-    override val description = "balcony"
+  object NorthBalcony extends Room(NorthWest, "north balcony") with Balcony {
+    override val description = "you stand outside on a balcony. It's night. The air is hot and still. An outgrowth of" +
+      "gnarly brush blocks your view of the horizon past the metal railing."
 
     override lazy val wall0 = WallNorthBalcony0
     override lazy val wall1 = WallNorthBalcony1
@@ -216,8 +216,8 @@ object Rooms{
     override lazy val wall3 = WallNorthBalcony3
   }
 
-  object RoomEleven extends Room(NorthWest) {
-    override val description = "room lol"
+  object RoomEleven extends Room(NorthWest, "room eleven") {
+    override val description = "you're in a room lol."
 
     override lazy val wall0 = WallEleven0
     override lazy val wall1 = WallEleven1

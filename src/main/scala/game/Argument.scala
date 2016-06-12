@@ -9,14 +9,19 @@ class Argument(val lexeme: Lexeme) {
 }
 
 //Any real-world object (referred to by a countable noun) that the player can interact with
-class ConcreteArgument(val ap: Option[AdjectivePhrase],
-                       val noun: CountableNoun,
-                       val pp: Option[PrepositionalPhrase]) extends Argument(noun) {
-  def toNp(det: Option[Determiner]) = new NounPhrase(det, ap, noun, pp)
-  def npIndefinite = new NounPhrase(Some(A), ap, noun, pp)
-  def npDefinite = new NounPhrase(Some(The), ap, noun, pp)
+abstract class ConcreteArgument(val ap: Option[AdjectivePhrase],
+                                val noun: SingularNoun,
+                                val pp: Option[PrepositionalPhrase]) extends Argument(noun) {
+  val locationPp: PrepositionalPhrase
+  val stativeVerb: Verb
 
-  def show: String = noun.withIndefinite.toString
+  val locations = Seq.empty[ItemLocation]
+
+  def toNp(det: Option[Determiner]) = new SingularNounPhrase(det, ap, noun, pp)
+  def npIndefinite = toNp(Some(A))
+  def npDefinite = toNp(Some(The))
+
+  def show: String = new VerbPhrase(Present, npIndefinite, stativeVerb, locationPp).toString
 }
 
 //Used if the player tries to supply an argument not in the game

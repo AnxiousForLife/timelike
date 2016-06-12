@@ -6,5 +6,7 @@ object Uncleared extends ObjectiveState
 
 class Objective {
   var state: ObjectiveState = Uncleared
+
   def clear() = state = Cleared
+  def isCleared: Boolean = {state == Cleared}
 }

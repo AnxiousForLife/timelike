@@ -1,15 +1,17 @@
 package game
 
 import game.LockState._
-import game.syntaxEn.CountableNoun
+import game.syntaxEn.SingularNoun
 
 sealed class PlateState
 object Raised extends PlateState
 object Balanced extends PlateState
 object Depressed extends PlateState
 
-abstract class PressurePlate(weight: Int, openable: Openable) extends ConcreteArgument(None, new CountableNoun("pressure plate"), None) {
+abstract class PressurePlate(weight: Int, openable: Openable) extends ConcreteArgument(None, new SingularNoun("pressure plate"), None) {
   val top = new Top(this)
+  override val locations = Seq(top)
+
   var state: PlateState
 
   def update() = {

@@ -5,7 +5,8 @@ import game.syntaxEn.Determiner._
 import game.syntaxEn.Preposition._
 
 class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) {
-  val floor = new ItemLocation(On, new NounPhrase(Some(The), None, new Noun("floor"), None))
+  val floor = new ItemLocation(On, new SingularNounPhrase(Some(The), None, new Noun("floor"), None))
+  val objective: Option[Objective] = None
 
   def availArguments: Seq[Argument] = door.toSeq ++ arguments ++ availItems :+ RelativeDirection.Left :+ RelativeDirection.Right
 
@@ -33,10 +34,10 @@ class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) 
     openables
   }
 
-  def availLevers: Seq[Lever] = {
-    var levers = Seq.empty[Lever]
+  def availLevers: Seq[PullChain] = {
+    var levers = Seq.empty[PullChain]
     for (x <- arguments) x match {
-      case l: Lever => levers = levers :+ l
+      case l: PullChain => levers = levers :+ l
       case _ => {}
     }
     levers

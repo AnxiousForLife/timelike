@@ -12,8 +12,8 @@ object InnerFace extends Orientation
 object LeftFace extends Orientation
 
 //The game rooms and the direction their outer wall faces
-//(The rooms are arranged in a circle, thus all have one face facing outwards)
-abstract class Room(val outwardFace: Direction) extends Argument(new Noun("room")) {
+//(The rooms are arranged in a circle, thus are defined by the direction their outward face points)
+abstract class Room(val outwardDirection: Direction, val name: String) extends Argument(new Noun("room")) {
   val description: String
 
   val wall0: RoomWall
@@ -21,31 +21,29 @@ abstract class Room(val outwardFace: Direction) extends Argument(new Noun("room"
   val wall2: RoomWall
   val wall3: RoomWall
 
-  val objective: Option[Objective] = None
+  val rightDirection: Direction = outwardDirection.right.right
+  val inwardDirection: Direction = outwardDirection.opposite
+  val leftDirection: Direction = outwardDirection.left.left
 
-  val rightFace: Direction = outwardFace.right.right
-  val inwardFace: Direction = outwardFace.opposite
-  val leftFace: Direction = outwardFace.left.left
+  def orientations: Map[Direction, Orientation] = Map(outwardDirection -> OuterFace,
+                                                      rightDirection -> RightFace,
+                                                      inwardDirection -> InnerFace,
+                                                      leftDirection -> LeftFace)
 
-  def orientations: Map[Direction, Orientation] = Map(outwardFace -> OuterFace,
-                                                      rightFace -> RightFace,
-                                                      inwardFace -> InnerFace,
-                                                      leftFace -> LeftFace)
-
-  def directions: Map[Orientation, Direction] = Map(OuterFace -> outwardFace,
-    RightFace -> rightFace,
-    InnerFace -> inwardFace,
-    LeftFace -> leftFace)
+  def directions: Map[Orientation, Direction] = Map(OuterFace -> outwardDirection,
+    RightFace -> rightDirection,
+    InnerFace -> inwardDirection,
+    LeftFace -> leftDirection)
 
   def currentWall(direction: Direction): RoomWall = {
     direction match {
-      case `outwardFace` => wall0
+      case `outwardDirection` => wall0
       //90 degrees to the right
-      case `rightFace` => wall1
+      case `rightDirection` => wall1
       //180 degrees to the right
-      case `inwardFace` => wall2
+      case `inwardDirection` => wall2
       //270 degrees to the right
-      case `leftFace` => wall3
+      case `leftDirection` => wall3
     }
   }
 }

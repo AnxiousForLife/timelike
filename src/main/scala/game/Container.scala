@@ -1,11 +1,17 @@
 package game
 
-import game.syntaxEn.{AdjectivePhrase, CountableNoun, PrepositionalPhrase}
+import game.syntaxEn.Noun.WallNoun
+import game.syntaxEn.Preposition.Against
+import game.syntaxEn.{AdjectivePhrase, PrepositionalPhrase, SingularNoun}
 
-class Container(override val noun: CountableNoun,
+abstract class Container(override val noun: SingularNoun,
                 override val ap: Option[AdjectivePhrase],
                 override val pp: Option[PrepositionalPhrase]) extends ConcreteArgument(ap, noun, pp) with Openable {
+  override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(Against, WallNoun.withDefinite)
+
   val interior = new Interior(this)
 
-  def contents: Seq[Item] = Item.list.filter(_.location == interior).toSeq
+  override val locations: Seq[ItemLocation] = Seq(interior)
+
+  def contents: Seq[Item] = interior.items
 }
