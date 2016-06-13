@@ -4,7 +4,8 @@ class LockState
 
 object LockState {
   case object Unlocked extends LockState
-  case object Barred extends LockState
-  case class KeyLock(val key: Key) extends LockState
+  case class Barred(symbol: String) extends LockState //Door bars and levers are engraved with matching symbols
+  case class KeyLock(key: Key) extends LockState
+  case object SwitchLock extends LockState
 }
 

@@ -1,9 +1,10 @@
 package game
 
-import game.util.Printable
+import game.syntaxEn.{Lexeme, Noun}
 
 sealed abstract class Direction(str: String) extends Printable(str) {
   import Direction._
+  import RelativeDirection._
 
   //The direction to the immediate RIGHT of each direction
   final def right: Direction = this match {
@@ -40,6 +41,13 @@ sealed abstract class Direction(str: String) extends Printable(str) {
     case West => East
     case NorthWest => SouthEast
   }
+
+  def turn(rDir: RelativeDirection) = {
+    rDir match {
+      case Left => this.left.left
+      case Right => this.right.right
+    }
+  }
 }
 
 object Direction {
@@ -51,4 +59,11 @@ object Direction {
   case object SouthWest extends Direction("southwest")
   case object West extends Direction("west")
   case object NorthWest extends Direction("northwest")
+}
+
+sealed abstract class RelativeDirection(val noun: Noun) extends Argument(noun)
+
+object RelativeDirection {
+  case object Left extends RelativeDirection(new Noun("left"))
+  case object Right extends RelativeDirection(new Noun("right"))
 }

@@ -1,73 +1,283 @@
 package game.engine
 
-import game.Drawer
-import game.GameState
-import game.Item
-import game.util.NumberToOrdinalWords
+import game.LockState.Barred
+import game.{Argument, _}
+import game.assets.Items._
+import game.assets.Title
+import game.syntaxEn.Verb.Lie
+import game.syntaxEn._
+import game.util.{ListStrings, OptionStrings}
+
+import scala.Console.{BOLD, RESET}
 
 object Output {
+  def printIndent(s: String) = println("   " ++ s)
+
+  def showTitle() = println(Title.str)
+
+  def showReturnTitle() = {
+    val returnText = "[PRESS ENTER (⏎)]"
+    val spacesAmt = Title.width - returnText.length
+    println(" " * spacesAmt ++ "[PRESS ENTER (⏎)]")
+  }
+  def showReturnShort() = println("(↵)")
+
+  def showInvalid() = printIndent("That means nothing here.")
+
+  def showAmbiguousArg(args: Seq[Argument]) = {
+    val options = ListStrings.listOr(for (x <- args) yield x.toString ++ s"(" + BOLD + (args.indexOf(x) + 1) + RESET + ")")
+    printIndent("Which one? " ++ options.capitalize ++ "?")
+  }
+
+  def directionText(state: GameState): Option[String] = {
+    if (Inventory.contains(Compass)) Some(s"You face ${state.direction}.")
+    else None
+  }
+
+  def fovText(state: GameState): String = {
+    val doorText: Option[String] = {
+      state.currentWall.door match {
+        case None => None
+        case Some(doorway: Doorway) => {
+          doorway match {
+            case door: Door => {
+              if (door.isOpen) Some("There's an open door before you.")
+              else {
+                door.lock match {
+                  case x: Barred => Some("There's " ++ door.npIndefinite.toString ++ " before you," +
+                    s" but it's blocked by iron bars with images of ${new SingularNoun(x.symbol).plural} engraved on them.")
+                  case _ => Some("There's " ++ door.npIndefinite.toString ++ " before you.")
+                }
+              }
+            }
+            case _: BalconyWalkway => Some("The path continues this way.")
+            case _ => Some("There's " ++ doorway.npIndefinite.toString ++ " before you.")
+          }
+        }
+      }
+    }
+
+    def locationItems(l: ItemLocation): Option[String] = {
+      val items = state.itemsAtLocation(l)
+      if (items.isEmpty) None
+      else if (state.currentWall.availLocations.contains(l))
+        Some(new VerbPhrase(Present,
+          new ConjoinedNounPhrase(for(i <- items) yield i.npIndefinite, And), Lie, l.toPp).ppFirst.capitalize ++ ".")
+      else None
+    }
+
+    val wallItemsText: Option[String] = {
+      val string = locationItems(state.currentWall.floor).getOrElse("")
+      if (string.isEmpty) None else Some(string)
+    }
+
+    def showItems(a: ConcreteArgument): Option[String] = {
+      val string = OptionStrings.concat(for (l <- a.locations) yield locationItems(l))
+      if (string.isEmpty) None else Some(string)
+    }
+
+    val argumentText: Option[String] = {
+      state.currentWall.arguments match {
+        case x if x.isEmpty => None
+        case arguments => Some((for (x <- arguments) yield OptionStrings.concat(Seq(Some(x.show.capitalize ++ "."), showItems(x)))).mkString(" "))
+      }
+    }
+
+    val allArguments: String = {
+      val all = OptionStrings.concat(Seq(doorText, wallItemsText, argumentText))
+      all.length match {
+        case 0 => "There's nothing before you."
+        case _ => all
+      }
+    }
+
+    allArguments.capitalize
+  }
+
   def showRoom(state: GameState) = {
-    val room = state.room
-    s"$room."
+    val head = if (Inventory.contains(Map)) s"||${state.room.name.split(' ').map(_.capitalize).mkString(" ")}||\n||-" else "||-"
+    val raw = s"$head${OptionStrings.concat(Seq(directionText(state), Some(state.room.description.capitalize), Some(fovText(state))))}"
+    println("_" * Title.width + s"\n$raw")
   }
 
-  def showDirection(state: GameState): String = {
-    val dir = state.direction
-    s"You are facing $dir."
+  def showFOV(state: GameState) = printIndent(OptionStrings.concat(Seq(directionText(state), Some(fovText(state)))))
+
+  def showFirstWalk() = printIndent(s"An urge to " + BOLD + "walk forward" + RESET + ".")
+  def showFirstTurn() = printIndent(s"An urge to " + BOLD + "turn right" + RESET + ".")
+  def showEscape() = printIndent(s"An urge to escape.")
+
+  def showContents(state: GameState, c: Container) = {
+    val text = state.itemsAtLocation(c.interior) match {
+      case Nil => s"${c.noun.withDefinite.toString.capitalize} is empty."
+      case items => {
+        val stringList: Seq[String] = for (x <- items) yield x.npIndefinite.toString
+        val copula = if (stringList.length == 1) "is" else "are"
+        s"Inside ${c.noun.withDefinite.toString} $copula " ++ ListStrings.listOr(stringList) ++ "."
+      }
+    }
+    printIndent(text)
   }
 
-  def showWall(state: GameState): String = state.room.currentWall(state.direction).showText
+  def showAmbiguousDirection() = {
+    printIndent("But which way?")
+  }
 
-  def showRoomObject(state: GameState): String = state.room.currentWall(state.direction).roomObject.map(" There's " ++ _.describe ++ ".").getOrElse("")
+  def showNotADirection(a: Argument) = {
+    printIndent(s""""$a" is not a direction.""")
+  }
 
-  def showItem(state: GameState): String = state.room.currentWall(state.direction).item.map(" There's " ++ _.withArticle ++ " here.").getOrElse("")
+  def showTurn(rd: RelativeDirection) = {
+    printIndent(s"You turn $rd.")
+  }
 
-  //mkString combines the necessary strings, while the optional strings are appended separately.
-  def showState(state: GameState) {
-    println(Array(showRoom(state), showDirection(state), showWall(state) ++ ".").mkString(" ") ++ showRoomObject(state) ++ showItem(state))
+  def showOpen(o: ConcreteArgument with Openable) = {
+    printIndent(s"You open ${o.noun.withDefinite}.")
+  }
+
+  def showAlreadyOpened(o: ConcreteArgument with Openable) = {
+    printIndent(s"${o.noun.withDefinite.toString.capitalize} is already open.")
+  }
+
+  def showCantOpen() = {
+    printIndent("You can't open that.")
+  }
+
+  def showNoOpenable() = {
+    printIndent(s"There's nothing here to open.")
+  }
+
+  //Prints a list of things the player can open if they don't specify what to open.
+  def showAmbiguousOpen(openables: Seq[ConcreteArgument with Openable]) = {
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val listOr = ListStrings.listOr(stringList)
+    printIndent(s"You could open $listOr.")
+  }
+
+  def showClose(o: ConcreteArgument with Openable) = {
+    printIndent(s"You close ${o.noun.withDefinite}.")
+  }
+
+  def showAlreadyClosed(o: ConcreteArgument with Openable) = {
+    printIndent(s"${o.noun.withDefinite.toString.capitalize} is already closed.")
+  }
+
+  def showCantClose() = {
+    printIndent("You can't open that.")
+  }
+
+  def showNoCloseable() = {
+    printIndent(s"There's nothing here to close.")
+  }
+
+  def showAmbiguousClose(openables: Seq[ConcreteArgument with Openable]) = {
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val listOr = ListStrings.listOr(stringList)
+    printIndent(s"Could close $listOr.")
   }
 
   def showNoExit() {
-    println("There's no exit here.")
+    printIndent("There's no way to go here.")
   }
 
-  def showEnterRoom() {
-    println("You go through the door.")
+  def showEnterRoom(d: Doorway) {
+    d match {
+      case _: BalconyWalkway => printIndent("You walk along the balcony.")
+      case _ => printIndent("You walk through the doorway.")
+    }
   }
 
-  def showTakeNothing() {
-    println("Nothing here to take.")
+  def showDoorClosed() {
+    printIndent("The door is closed.")
+  }
+
+  def showCantEnter() {
+    printIndent("You can't enter that.")
+  }
+
+  def showNoItem() {
+    printIndent("There's nothing here to take.")
+  }
+
+  //Prints a list of items the player can take if they don't specify what to take.
+  def showAmbiguousTake(items: Seq[Item]) = {
+    val stringList: Seq[String] = for (x <- items) yield x.noun.withDefinite.toString
+    val listOr = ListStrings.listOr(stringList)
+    printIndent(s"You could take $listOr.")
   }
 
   def showTakeItem(x: Item) {
-    println(s"You take the $x.")
+    printIndent(s"You take the $x.")
   }
 
-  def showNoSearch() {
-    println("Nothing here to search.")
+  def showUnavailableArgument() {
+    printIndent(s"There's nothing like that here.")
   }
 
-  def showDrawer(drawer: Drawer, n: Int) {
-    println(s"You look in the ${NumberToOrdinalWords.convert6(n)} drawer." ++ " " ++ drawer.show())
+  def showCantTake() {
+    printIndent(s"You can't take that.")
   }
 
-  def showKeyLocked() {
-    println("The door is locked.")
+  def showCantUnlock() {
+    printIndent("You can't unlock that.")
+  }
+
+  def showKeyLocked(o: Openable) {
+    o match {
+      case _: DoorPair => printIndent("The doors are locked.")
+      case _ => printIndent("The door is locked.")
+    }
+
   }
 
   def showDoorBarred() {
-    println("The door is blocked by bars.")
+    printIndent("The door is blocked by bars.")
   }
 
-  def showUnlock() {
-    println("You unlock the door.")
+  def showUnlock(o: ConcreteArgument with Openable) {
+    printIndent(s"You unlock ${o.noun.withDefinite}.")
+  }
+
+  def showNoKey() {
+    printIndent("You don't have the key to open this.")
+  }
+
+  def showCantUnlockBars() {
+    printIndent("There's no way to get past the bars.")
+  }
+
+  def showAlreadyUnlocked(o: ConcreteArgument with Openable) = {
+    printIndent(s"${o.noun.withDefinite.toString.capitalize} isn't locked.")
+  }
+
+  def showNoUnlockable() = {
+    printIndent(s"There's nothing here to unlock.")
+  }
+
+  def showAmbiguousUnlock(openables: Seq[ConcreteArgument with Openable]) = {
+    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val listOr = ListStrings.listOr(stringList)
+    printIndent(s"You could unlock $listOr.")
+  }
+
+  def showPull() = {
+    printIndent(s"You pull the lever.")
+  }
+
+  def showNoLever() = {
+    printIndent(s"There's nothing here to pull.")
+  }
+
+  def showAmbiguousPull(levers: Seq[PullChain]) = {
+    val stringList: Seq[String] = for (x <- levers) yield x.noun.withDefinite.toString
+    val listOr = ListStrings.listOr(stringList)
+    printIndent(s"You could unlock $listOr.")
   }
 
   def showBlockRewind() {
-    println("You can't rewind any further.")
+    printIndent("You can't rewind any further.")
   }
 
   def showRewind() {
-    println("SNAP!")
+    printIndent("SNAP!")
   }
 }
