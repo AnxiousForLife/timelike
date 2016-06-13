@@ -1,6 +1,7 @@
 package game.syntaxEn
 
 import game.syntaxEn.Determiner._
+import game.util.ListStrings
 
 abstract class NounPhrase {
   def person: Person
@@ -38,23 +39,5 @@ class ConjoinedNounPhrase(nps: Seq[SingularNounPhrase], conj: Conjunction) exten
     if (nps.length == 1) Singular else Plural
   }
 
-  override def toString = list(nps, And)
-
-  def list(nps: Seq[SingularNounPhrase], conj: Conjunction): String = {
-    val strings: Seq[String] = nps.map(_.toString)
-    nps.length match {
-      case x if (x <= 1) => strings.headOption.getOrElse("")
-      case 2 => strings.head ++ " " ++ conj.toString ++ " " ++ strings.last
-      case _ => commaSeparate(strings, conj.toString)
-    }
-  }
-
-  def commaSeparate(strings: Seq[String], conj: String): String = {
-    strings match {
-      case x :: Nil => conj ++ " " ++ x
-      case x :: xs => {
-        x ++ ", " ++ commaSeparate(xs, conj)
-      }
-    }
-  }
+  override def toString = ListStrings.list(nps.map(_.toString), conj.toString)
 }

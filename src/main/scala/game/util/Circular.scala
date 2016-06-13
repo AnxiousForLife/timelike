@@ -1,3 +1,4 @@
+/*
 package game.util
 
 import scala.collection.mutable.Queue
@@ -27,5 +28,4 @@ class Circular[A](list: Seq[A]) extends Iterator[A]{
   def hasNext = !elements.isEmpty
 
   override def toString = elements.toString
-
-}
+}*/

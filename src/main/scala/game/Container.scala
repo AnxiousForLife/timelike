@@ -12,6 +12,4 @@ abstract class Container(override val noun: SingularNoun,
   val interior = new Interior(this)
 
   override val locations: Seq[ItemLocation] = Seq(interior)
-
-  def contents: Seq[Item] = interior.items
 }

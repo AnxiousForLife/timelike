@@ -24,6 +24,11 @@ object Output {
 
   def showInvalid() = printIndent("That means nothing here.")
 
+  def showAmbiguousArg(args: Seq[Argument]) = {
+    val options = ListStrings.listOr(for (x <- args) yield x.toString ++ s"(" + BOLD + (args.indexOf(x) + 1) + RESET + ")")
+    printIndent("Which one? " ++ options.capitalize ++ "?")
+  }
+
   def directionText(state: GameState): Option[String] = {
     if (Inventory.contains(Compass)) Some(s"You face ${state.direction}.")
     else None
@@ -53,10 +58,11 @@ object Output {
     }
 
     def locationItems(l: ItemLocation): Option[String] = {
-      if (l.items.isEmpty) None
+      val items = state.itemsAtLocation(l)
+      if (items.isEmpty) None
       else if (state.currentWall.availLocations.contains(l))
         Some(new VerbPhrase(Present,
-          new ConjoinedNounPhrase(for(i <- l.items) yield i.npIndefinite, And), Lie, l.toPp).ppFirst.capitalize ++ ".")
+          new ConjoinedNounPhrase(for(i <- items) yield i.npIndefinite, And), Lie, l.toPp).ppFirst.capitalize ++ ".")
       else None
     }
 
@@ -72,7 +78,7 @@ object Output {
 
     val argumentText: Option[String] = {
       state.currentWall.arguments match {
-        case Nil => None
+        case x if x.isEmpty => None
         case arguments => Some((for (x <- arguments) yield OptionStrings.concat(Seq(Some(x.show.capitalize ++ "."), showItems(x)))).mkString(" "))
       }
     }
@@ -89,7 +95,7 @@ object Output {
   }
 
   def showRoom(state: GameState) = {
-    val head = if (Inventory.contains(Map)) s"||${state.room.name.split(' ').map(_.capitalize).mkString(" ")}||-" else "||-"
+    val head = if (Inventory.contains(Map)) s"||${state.room.name.split(' ').map(_.capitalize).mkString(" ")}||\n||-" else "||-"
     val raw = s"$head${OptionStrings.concat(Seq(directionText(state), Some(state.room.description.capitalize), Some(fovText(state))))}"
     println("_" * Title.width + s"\n$raw")
   }
@@ -100,8 +106,8 @@ object Output {
   def showFirstTurn() = printIndent(s"An urge to " + BOLD + "turn right" + RESET + ".")
   def showEscape() = printIndent(s"An urge to escape.")
 
-  def showContents(c: Container) = {
-    val text = c.contents match {
+  def showContents(state: GameState, c: Container) = {
+    val text = state.itemsAtLocation(c.interior) match {
       case Nil => s"${c.noun.withDefinite.toString.capitalize} is empty."
       case items => {
         val stringList: Seq[String] = for (x <- items) yield x.npIndefinite.toString

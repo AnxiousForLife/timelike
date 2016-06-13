@@ -1,9 +1,9 @@
 package game
 
-import game.syntaxEn.Noun
+import game.syntaxEn.{Lexeme, Noun}
 
 //The game state, containing a log of all the past player locations and the current player location
-class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction) extends Argument(new Noun("game")) {
+class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction, val items: Seq[Item]) extends Argument(new Noun("game")) {
   def currentWall = room.currentWall(direction)
 
   def updateLog() { log :+= (room, direction) }
@@ -28,6 +28,21 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
 
     updateDirection(newDirection)
     updateRoom(newRoom)
+  }
+
+  def itemsAtLocation(l: ItemLocation): Seq[Item] = items.filter(_.location == l)
+
+  def availArguments: Seq[Argument] = currentWall.door.toSeq ++ currentWall.arguments ++ availItems :+ RelativeDirection.Left :+ RelativeDirection.Right
+
+  def availItems: Seq[Item] = items.filter(x => currentWall.availLocations.contains(x.location))
+
+  def lookup(input: String): LookupResult = {
+    val results = availArguments.filter(_.lexeme.lemma == input)
+    if (results.size <= 1) {
+      val arg = results.headOption.getOrElse(new DummyArgument(new Lexeme(input)))
+      new ArgumentResult(arg)
+    }
+    else new AmbiguousResult(results)
   }
 
   def lastState() = {

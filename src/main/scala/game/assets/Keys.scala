@@ -14,6 +14,4 @@ object Keys {
   object Room6Key extends Key(WallSeven0.floor, None, Some(Key.numeral(6)))
   object BalconyKey extends Key(WallFive0.floor, DoorNorthBalcony.ap, None)
   object Room11Key extends Key(WallStorageFour0.floor, None, Some(Key.numeral(11)))
-
-  val list = Set(ExitKey, Room2Key, Room3Key, Room5Key, Room6Key, BalconyKey, Room11Key)
 }

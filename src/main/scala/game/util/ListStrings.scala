@@ -14,13 +14,12 @@ object ListStrings {
 
   def commaSeparate(strings: Seq[String], conj: String): String = {
     strings match {
-      case x::Nil => conj ++ " " ++ x
-      case x::xs => {
-        x ++ ", " ++ commaSeparate(xs, conj)
-      }
+      case x :: Nil => conj ++ " " ++ x
+      case x :: xs => x ++ ", " ++ commaSeparate(xs, conj)
     }
   }
 
   def listAnd(strings: Seq[String]): String = list(strings, and)
+
   def listOr(strings: Seq[String]): String = list(strings, or)
 }

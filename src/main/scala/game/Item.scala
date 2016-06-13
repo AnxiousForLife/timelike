@@ -1,6 +1,5 @@
 package game
 
-import scala.collection.mutable
 import game.syntaxEn.{AdjectivePhrase, PrepositionalPhrase, SingularNoun}
 import game.syntaxEn.Determiner._
 import game.syntaxEn.Noun
@@ -19,18 +18,6 @@ class Item(var location: ItemLocation,
 
   def place(l: ItemLocation) = { location = l }
   def take() = place(Inventory)
-}
-
-object Item {
-  var list = mutable.Set.empty[Item]
-
-  def update(i: Item) { list += i }
-
-  def lookup(input: String): Item = {
-    val results = list.filter(_.lexeme.lemma == input)
-    assert(results.size <= 1)
-    results.head
-  }
 }
 
 class Key(location: ItemLocation,

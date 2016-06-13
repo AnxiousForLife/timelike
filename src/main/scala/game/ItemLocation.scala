@@ -7,8 +7,6 @@ import game.syntaxEn.Preposition._
 //Anywhere an Item can be
 class ItemLocation(p: Preposition, np: SingularNounPhrase) {
   def toPp = new PrepositionalPhrase(p, np)
-
-  def items: Seq[Item] = Item.list.filter(_.location == this).toSeq
 }
 
 class Top(a: ConcreteArgument)
