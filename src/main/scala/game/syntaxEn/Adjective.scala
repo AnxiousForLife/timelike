@@ -1,7 +1,7 @@
 package game.syntaxEn
 
 class Adjective(lemma: String) extends Lexeme(lemma) {
-  def toAp = new AdjectivePhrase(None, this)
+  def toAp = new AdjectivePhrase(this)
 }
 
 object Adjective {

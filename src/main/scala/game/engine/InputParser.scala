@@ -3,8 +3,7 @@ package game.engine
 import game.{PlayerAction, RoomWall}
 import game.PlayerAction._
 import game.RelativeDirection._
-
-import game.syntaxEn.Determiner
+import game.syntaxEn._
 import game.syntaxEn.Determiner._
 import game.syntaxEn.Preposition._
 
@@ -22,13 +21,35 @@ final case class DitransitiveCommand(verb: String, obj1: String, obj2: String) e
 object InputParser extends RegexParsers {
   val word: Parser[String] = """[a-zA-Z]+""".r
 
-  /*val the: Parser[The] = "the" ^^^ The
-  val a: Parser[A] = "a" ^^^ A
-  val an: Parser[An] = "an" ^^^ An
+  /*val the: Parser[Determiner] = "the" ^^^ The
+  val a: Parser[Determiner] = "a" ^^^ A
+  val an: Parser[Determiner] = "an" ^^^ An
+
+  val against: Parser[Preposition] = "against" ^^^ Against
+  val before: Parser[Preposition] = "before" ^^^ Before
+  val from: Parser[Preposition] = "from" ^^^ From
+  val in: Parser[Preposition] = "in" ^^^ In
+  val inside: Parser[Preposition] = "inside" ^^^ Inside
+  val of: Parser[Preposition] = "of" ^^^ Of
+  val on: Parser[Preposition] = "on" ^^^ On
+  val through: Parser[Preposition] = "through" ^^^ Through
+  val upon: Parser[Preposition] = "upon" ^^^ Upon
 
   val determiner: Parser[Determiner] = the | a | an
 
-  lazy val nounPhrase = (determiner ?) (adjectivePhrase ?)  noun ~ (prepositionalPhrase ?) ^^ {}*/
+  val preposition: Parser[Preposition] = against | before | from | in | inside | of | on | through | upon
+
+  lazy val adjectivePhrase = word ^^ {
+    case a => new AdjectivePhrase(new Adjective(a))
+  }
+
+  lazy val prepositionalPhrase: Parser[PrepositionalPhrase] = preposition ~ nounPhrase ^^ {
+    case p ~ n => new PrepositionalPhrase(p, n)
+  }
+
+  lazy val nounPhrase = (determiner ?) ~ (adjectivePhrase ?) ~ word ~ (prepositionalPhrase ?) ^^ {
+    case det ~ ap ~ n ~ pp => new SingularNounPhrase(det, ap, new Noun(n), pp)
+  }*/
 
   val simple: Parser[IntransitiveCommand] = word ^^ (x => IntransitiveCommand(x))
 

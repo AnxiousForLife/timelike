@@ -2,7 +2,7 @@ package game.syntaxEn
 
 abstract class Verb(lemma: String) extends Lexeme(lemma) {
   def inflect(i: Inflection): String
-  def toAp = new AdjectivePhrase(None, new Adjective(lemma))
+  def toAp = new AdjectivePhrase(new Adjective(lemma))
 }
 
 object Verb {
