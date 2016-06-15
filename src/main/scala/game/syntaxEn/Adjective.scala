@@ -10,5 +10,6 @@ object Adjective {
   object MarbleAdj extends Adjective("marble")
   object OpenAdj extends Adjective("open")
   object RustAdj extends Adjective("rusted")
+  object SteelAdj extends Adjective("steel")
   object WoodenAdj extends Adjective("wooden")
 }

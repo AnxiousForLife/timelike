@@ -9,7 +9,7 @@ class Sandbag(location: ItemLocation,
               capacity: Int,
               override val ap: Option[AdjectivePhrase],
               override val noun: SingularNoun,
-              override val pp: Option[PrepositionalPhrase]) extends Item(location, ap, new SingularNoun("bag"), pp) {
+              override val pp: Option[PrepositionalPhrase]) extends Item(location, ap = ap, noun = new SingularNoun("bag"), pp = pp) {
   var amt: Int = 0
 
   def remaining = capacity - amt

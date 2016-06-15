@@ -6,7 +6,7 @@ import game.{Inventory, Item}
 import game.assets.RoomWalls._
 
 object Items {
-  object Compass extends Item(WallFour0.floor, None, new SingularNoun("compass"), None)
-  object Map extends Item(/*WallStorageFour2.floor*/ Inventory, None, new SingularNoun("map"), None)
-  object Locket extends Item(CenterPedestal.top, None, new SingularNoun("locket"), None)
+  object Compass extends Item(WallFour0.floor, ap = None, noun = new SingularNoun("compass"), pp = None)
+  object Map extends Item(WallStorageFour2.floor, ap = None, noun = new SingularNoun("map"), pp = None)
+  object Locket extends Item(CenterPedestal.top, ap = None, noun = new SingularNoun("locket"), pp = None)
 }

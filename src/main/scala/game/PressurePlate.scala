@@ -1,14 +1,18 @@
 package game
 
 import game.LockState._
+import game.syntaxEn.Adjective.SteelAdj
 import game.syntaxEn.SingularNoun
+import game.syntaxEn.Verb.Be
 
 sealed class PlateState
 object Raised extends PlateState
 object Balanced extends PlateState
 object Depressed extends PlateState
 
-abstract class PressurePlate(weight: Int, openable: Openable) extends ConcreteArgument(None, new SingularNoun("pressure plate"), None) {
+abstract class PressurePlate(val weight: Int,openable: Openable)
+  extends ConcreteArgument(Some(SteelAdj.toAp), new SingularNoun("pressure plate"), None) {
+  override val stativeVerb = Be
   val top = new Top(this)
   override val locations = Seq(top)
 

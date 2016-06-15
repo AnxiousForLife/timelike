@@ -45,6 +45,14 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
     else new AmbiguousResult(results)
   }
 
+  def updatePlate(p: PressurePlate) = {
+    val totalWeight = itemsAtLocation(p.top).filter(_.isInstanceOf[Sandbag]).asInstanceOf[Seq[Sandbag]].foldLeft(0)((x, y) => x + y.amt)
+    if (totalWeight == p.weight) p.state = Balanced
+    else if (totalWeight > p.weight) p.state = Depressed
+    else p.state = Raised
+    p.update()
+  }
+
   def lastState() = {
     log = log.dropRight(1)
     room = log.last._1

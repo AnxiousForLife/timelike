@@ -5,6 +5,7 @@ import game.assets.Objectives._
 import game.LockState._
 import game.PlayerAction._
 import game.RelativeDirection._
+import game.assets.Items.Locket
 import game.assets.{Items, Keys}
 
 import scala.util.Try
@@ -214,10 +215,13 @@ class Engine(val state: GameState) {
 
   //Takes the player back to the previous GameState (as long as there are more than 1 previous GameStates)
   def rewind() = {
-    if (state.log.length > 1) {
-      state.lastState()
-      Output.showRewind()
-    } else Output.showBlockRewind()
+    if (Inventory.contains(Locket)){
+      if (state.log.length > 1) {
+        state.lastState()
+        Output.showRewind()
+      } else Output.showBlockRewind()
+    }
+    else Output.showInvalid()
   }
 
   def tryOpen(a: Option[Argument]) = {

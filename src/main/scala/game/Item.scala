@@ -22,7 +22,7 @@ class Item(var location: ItemLocation,
 
 class Key(location: ItemLocation,
           override val ap: Option[AdjectivePhrase],
-          override val pp: Option[PrepositionalPhrase]) extends Item(location, ap, new SingularNoun("key"), pp)
+          override val pp: Option[PrepositionalPhrase]) extends Item(location, ap = ap, noun = new SingularNoun("key"), pp = pp)
 
 object Key {
   def numeral(n: Int) =

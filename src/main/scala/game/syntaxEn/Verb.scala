@@ -6,6 +6,17 @@ abstract class Verb(lemma: String) extends Lexeme(lemma) {
 }
 
 object Verb {
+  object Be extends Verb("be") {
+    def inflect(i: Inflection): String = {
+      (i.person, i.number, i.tense) match {
+        case (FirstPerson, Singular, Present) => "am"
+        case (SecondPerson, _, Present) | (_, Plural, Present) => "are"
+        case (ThirdPerson, Singular, _) => "is"
+        case (SecondPerson, Singular, Past) | (_, Plural, Past) => "were"
+        case (_, _, Past) => "was"
+      }
+    }
+  }
   object Hang extends Verb("lie") {
     def inflect(i: Inflection): String = {
       (i.person, i.number, i.tense) match {
