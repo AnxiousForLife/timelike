@@ -9,5 +9,5 @@ object PullChains {
   object PullChain11 extends PullChain(Up, "thorned vine", DoorTenEleven, DoorNineTen)
   object PullChain9 extends PullChain(Up, "snake skeleton", DoorTenEleven, DoorNineTen)
   object PullChain6 extends PullChain(Up, "serpent", DoorSixSeven, DoorSixAccess)
-  object CenterAccessPullChain extends PullChain(Up, "waves", DoorMidAccess, DoorCenterAccess)
+  object CenterAccessPullChain extends PullChain(Up, "ocean wave", DoorMidAccess, DoorCenterAccess)
 }

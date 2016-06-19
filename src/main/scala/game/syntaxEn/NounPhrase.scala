@@ -1,14 +1,14 @@
 package game.syntaxEn
 
 import game.syntaxEn.Determiner._
-import game.util.ListStrings
+import game.util.{ListStrings, SeqUtil}
 
 abstract class NounPhrase {
   def person: Person
   def number: Number
 }
 
-class SingularNounPhrase(det: Option[Determiner], ap: Option[AdjectivePhrase], n: Noun, pp: Option[PrepositionalPhrase])
+class SingularNounPhrase(det: Option[Determiner], val ap: Option[AdjectivePhrase], val n: Noun, val pp: Option[PrepositionalPhrase])
   extends NounPhrase {
   def person = n.person
   def number = n.number
@@ -33,7 +33,7 @@ class SingularNounPhrase(det: Option[Determiner], ap: Option[AdjectivePhrase], n
   def rest: String = ap.fold("")(x => x.toString ++ " ") ++ n.toString ++ pp.fold("")(x => " " ++ x.toString)
 }
 
-class ConjoinedNounPhrase(nps: Seq[SingularNounPhrase], conj: Conjunction) extends NounPhrase {
+class ConjoinedNounPhrase(nps: List[SingularNounPhrase], conj: Conjunction) extends NounPhrase {
   def person = ThirdPerson
   def number = {
     if (nps.length == 1) Singular else Plural

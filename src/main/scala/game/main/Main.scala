@@ -1,17 +1,16 @@
 package game.main
 
 import game.GameState
-import game.assets.Items._
-import game.assets.Keys._
+import game.assets.{Items, Keys}
 import game.assets.Rooms._
 import game.engine.Engine
 
 object Main {
   def main(args: Array[String]) {
-    val startRoom = DungeonCell
+    val startRoom = RoomThree
     val startDirection = startRoom.outwardDirection.left.left
 
-    val items = Seq(Compass, Map, Locket, ExitKey, Room2Key, Room3Key, Room5Key, Room6Key, BalconyKey, Room11Key)
+    val items = Items.list ++ Keys.list
     val startState = new GameState(Seq((startRoom, startDirection)), startRoom, startDirection, items)
 
     val engine = new Engine(startState)

@@ -8,6 +8,10 @@ class Argument(val lexeme: Lexeme) {
   override def toString = lexeme.toString
 }
 
+sealed trait Availability
+object Available extends Availability
+object Unavailable extends Availability
+
 //Any real-world object (referred to by a countable noun) that the player can interact with
 abstract class ConcreteArgument(val ap: Option[AdjectivePhrase],
                                 val noun: SingularNoun,
@@ -16,9 +20,17 @@ abstract class ConcreteArgument(val ap: Option[AdjectivePhrase],
   val locationPp: PrepositionalPhrase
   val stativeVerb: Verb
 
-  val locations = Seq.empty[ItemLocation]
+  var availability: Availability = Available
+  def isAvailable = availability == Available
 
-  def toNp(det: Option[Determiner]) = new SingularNounPhrase(det, ap, noun, pp)
+  val locations = Seq.empty[ItemLocation]
+  def availLocations = locations
+
+  private def simple(det: Option[Determiner]) = new SingularNounPhrase(det, None, noun, None)
+  def simpleA = simple(Some(A))
+  def simpleThe = simple(Some(The))
+
+  private def toNp(det: Option[Determiner]) = new SingularNounPhrase(det, ap, noun, pp)
   def npIndefinite = toNp(Some(A))
   def npDefinite = toNp(Some(The))
 

@@ -1,6 +1,7 @@
 package game.assets
 
 import game.assets.Pedestals.CenterPedestal
+import game.assets.Scales.Scale3
 
 //Walls are listed starting with the outer wall, then going clockwise
 object RoomWalls {
@@ -18,7 +19,7 @@ object RoomWalls {
   }
 
   object WallSecond0 extends RoomWall(Some(DoorSecondTwelve), Seq.empty)
-  object WallSecond1 extends RoomWall(None, Seq.empty)
+  object WallSecond1 extends RoomWall(Some(DoorFirstSecond), Seq.empty)
   object WallSecond2 extends RoomWall(None, Seq.empty)
   object WallSecond3 extends RoomWall(None, Seq.empty) {
     override val objective = Some(FirstTurn)
@@ -47,7 +48,7 @@ object RoomWalls {
   object WallTwo3 extends RoomWall(Some(DoorOneTwo), Seq.empty)
 
   object WallThree0 extends RoomWall(Some(SecretDoorThree), Seq.empty)
-  object WallThree1 extends RoomWall(Some(DoorThreeFour), Seq.empty)
+  object WallThree1 extends RoomWall(Some(DoorThreeFour), Seq(Scale3))
   object WallThree2 extends RoomWall(None, Seq.empty)
   object WallThree3 extends RoomWall(Some(DoorTwoThree), Seq.empty)
 
@@ -83,13 +84,13 @@ object RoomWalls {
 
   object WallSixAccess0 extends RoomWall(Some(DoorSixAccess), Seq.empty)
   object WallSixAccess1 extends RoomWall(None, Seq.empty)
-  object WallSixAccess2 extends RoomWall(Some(DoorMidAccess), Seq.empty)
+  object WallSixAccess2 extends RoomWall(Some(DoorMidAccess), Seq(CenterAccessPullChain))
   object WallSixAccess3 extends RoomWall(None, Seq.empty)
 
   object WallCenterAccess0 extends RoomWall(Some(DoorMidAccess), Seq.empty)
   object WallCenterAccess1 extends RoomWall(None, Seq.empty)
   object WallCenterAccess2 extends RoomWall(Some(DoorCenterAccess), Seq.empty)
-  object WallCenterAccess3 extends RoomWall(None, Seq(CenterAccessPullChain))
+  object WallCenterAccess3 extends RoomWall(None, Seq.empty)
 
   object WallCenterRoom0 extends RoomWall(Some(DoorCenterAccess), Seq.empty)
   object WallCenterRoom1 extends RoomWall(None, Seq.empty)

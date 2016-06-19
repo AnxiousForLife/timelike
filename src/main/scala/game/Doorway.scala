@@ -15,6 +15,13 @@ class Doorway(val room1: Room,
   extends ConcreteArgument(ap, noun, pp) {
   override val stativeVerb = Stand
   override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(Before, YouNoun.toNp)
+
+  def nextRoom(currentRoom: Room): Room = {
+    currentRoom match {
+      case `room1` => room2
+      case `room2` => room1
+    }
+  }
 }
 
 class Door(override val room1: Room,

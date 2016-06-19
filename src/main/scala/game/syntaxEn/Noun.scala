@@ -9,7 +9,7 @@ class Noun(lemma: String) extends Lexeme(lemma) {
 
   def toNp = new SingularNounPhrase(None, None, this, None)
   def withDefinite = new SingularNounPhrase(Some(The), None, this, None)
-  def toAp = new AdjectivePhrase(new Adjective(lemma))
+  def toAp = new SimpleAdjectivePhrase(new Adjective(lemma))
 }
 
 class SingularNoun(lemma: String) extends Noun(lemma) {
@@ -31,6 +31,7 @@ object Noun {
   object CeilingNoun extends SingularNoun("ceiling")
   object DoorNoun extends SingularNoun("door")
   object DoorwayNoun extends SingularNoun("doorway")
+  object FloorNoun extends SingularNoun("floor")
   object NumeralNoun extends Noun("numeral")
   object PairNoun extends SingularNoun("pair")
   object WallNoun extends SingularNoun("wall")

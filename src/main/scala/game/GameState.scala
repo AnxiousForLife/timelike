@@ -2,9 +2,13 @@ package game
 
 import game.syntaxEn.{Lexeme, Noun}
 
+sealed trait LookupResult
+class ArgumentResult(val arg: Argument) extends LookupResult
+class AmbiguousResult(val args: Seq[Argument]) extends LookupResult
+
 //The game state, containing a log of all the past player locations and the current player location
 class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: Direction, val items: Seq[Item]) extends Argument(new Noun("game")) {
-  def currentWall = room.currentWall(direction)
+  def currentWall = room.dirToWall(direction)
 
   def updateLog() { log :+= (room, direction) }
   def updateRoom(newRoom: Room) = {
@@ -20,37 +24,26 @@ class GameState(var log: Seq[(Room, Direction)], var room: Room, var direction: 
 
   def enterRoom(doorway: Doorway) = {
     val orientation = room.orientations(direction)
-    val newRoom = {
-      if (room == doorway.room1) doorway.room2
-      else doorway.room1
-    }
-    val newDirection = newRoom.directions(orientation)
+    val nextRoom = doorway.nextRoom(room)
+    val newDirection = nextRoom.directions(orientation)
 
     updateDirection(newDirection)
-    updateRoom(newRoom)
+    updateRoom(nextRoom)
   }
 
   def itemsAtLocation(l: ItemLocation): Seq[Item] = items.filter(_.location == l)
 
-  def availArguments: Seq[Argument] = currentWall.door.toSeq ++ currentWall.arguments ++ availItems :+ RelativeDirection.Left :+ RelativeDirection.Right
+  def allAvailArguments: Seq[Argument] = currentWall.door.toSeq ++ currentWall.availArguments ++ availItems :+ RelativeDirection.Left :+ RelativeDirection.Right
 
   def availItems: Seq[Item] = items.filter(x => currentWall.availLocations.contains(x.location))
 
   def lookup(input: String): LookupResult = {
-    val results = availArguments.filter(_.lexeme.lemma == input)
+    val results = (allAvailArguments ++ itemsAtLocation(Inventory)).filter(_.lexeme.lemma == input)
     if (results.size <= 1) {
       val arg = results.headOption.getOrElse(new DummyArgument(new Lexeme(input)))
       new ArgumentResult(arg)
     }
     else new AmbiguousResult(results)
-  }
-
-  def updatePlate(p: PressurePlate) = {
-    val totalWeight = itemsAtLocation(p.top).filter(_.isInstanceOf[Sandbag]).asInstanceOf[Seq[Sandbag]].foldLeft(0)((x, y) => x + y.amt)
-    if (totalWeight == p.weight) p.state = Balanced
-    else if (totalWeight > p.weight) p.state = Depressed
-    else p.state = Raised
-    p.update()
   }
 
   def lastState() = {

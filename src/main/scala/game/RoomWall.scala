@@ -4,22 +4,13 @@ import game.syntaxEn._
 import game.syntaxEn.Determiner._
 import game.syntaxEn.Preposition._
 
-sealed trait LookupResult
-class ArgumentResult(val arg: Argument) extends LookupResult
-class AmbiguousResult(val args: Seq[Argument]) extends LookupResult
-
 class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) {
   val floor = new ItemLocation(On, new SingularNounPhrase(Some(The), None, new Noun("floor"), None))
   val objective: Option[Objective] = None
 
-  def availLocations: Seq[ItemLocation] = {
-    var locations = Seq[ItemLocation](floor)
-    for (x <- arguments) x match {
-      case c: Container => if(c.state == Opened) locations = locations :+ c.interior
-      case _ => {}
-    }
-    locations
-  }
+  def availArguments: Seq[ConcreteArgument] = arguments.filter(_.isAvailable)
+
+  def availLocations: Seq[ItemLocation] = availArguments.flatMap(_.availLocations) :+ floor
 
   def availOpenables: Seq[ConcreteArgument with Openable] = {
     var openables = Seq.empty[ConcreteArgument with Openable]
@@ -27,19 +18,16 @@ class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) 
       case Some(d: Door) => openables = openables :+ d
       case _ => {}
     }
-    for (x <- arguments) x match {
-      case o:  Openable => openables = openables :+ o
-      case _ => {}
-    }
+    availArguments.filter(_.isInstanceOf[Openable]) ++ openables
     openables
   }
 
-  def availLevers: Seq[PullChain] = {
-    var levers = Seq.empty[PullChain]
-    for (x <- arguments) x match {
-      case l: PullChain => levers = levers :+ l
+  def availSwitches: Seq[PullChain] = {
+    var switches = Seq.empty[PullChain]
+    for (x <- availArguments) x match {
+      case l: PullChain => switches = switches :+ l
       case _ => {}
     }
-    levers
+    switches
   }
 }

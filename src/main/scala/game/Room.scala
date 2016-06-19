@@ -14,6 +14,7 @@ object LeftFace extends Orientation
 //The game rooms and the direction their outer wall faces
 //(The rooms are arranged in a circle, thus are defined by the direction their outward face points)
 abstract class Room(val outwardDirection: Direction, val name: String) extends Argument(new Noun("room")) {
+  val properName = name
   val description: String
 
   val wall0: RoomWall
@@ -21,21 +22,27 @@ abstract class Room(val outwardDirection: Direction, val name: String) extends A
   val wall2: RoomWall
   val wall3: RoomWall
 
+  def walls = Seq(wall0, wall1, wall2, wall3)
+
   val rightDirection: Direction = outwardDirection.right.right
   val inwardDirection: Direction = outwardDirection.opposite
   val leftDirection: Direction = outwardDirection.left.left
+
+  val allDirections: Seq[Direction] =
+    Seq(directions(OuterFace), directions(RightFace), directions(InnerFace), directions(LeftFace))
 
   def orientations: Map[Direction, Orientation] = Map(outwardDirection -> OuterFace,
                                                       rightDirection -> RightFace,
                                                       inwardDirection -> InnerFace,
                                                       leftDirection -> LeftFace)
 
-  def directions: Map[Orientation, Direction] = Map(OuterFace -> outwardDirection,
+  def directions: Map[Orientation, Direction] = Map(
+    OuterFace -> outwardDirection,
     RightFace -> rightDirection,
     InnerFace -> inwardDirection,
     LeftFace -> leftDirection)
 
-  def currentWall(direction: Direction): RoomWall = {
+  def dirToWall(direction: Direction): RoomWall = {
     direction match {
       case `outwardDirection` => wall0
       //90 degrees to the right

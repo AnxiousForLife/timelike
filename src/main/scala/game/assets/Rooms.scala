@@ -6,7 +6,8 @@ import game.assets.RoomWalls._
 
 object Rooms{
   object DungeonCell extends Room(North, "dungeon cell") {
-    override val description = "you're in a small stone room."
+    override val properName = "the " ++ name
+    override val description = "you're in a small stone room. The floor is wet. Two rusty chains with shackles hang from the ceiling."
 
     override lazy val wall0 = WallFirst0
     override lazy val wall1 = WallFirst1
@@ -15,7 +16,8 @@ object Rooms{
   }
 
   object DungeonAccess extends Room(North, "dungeon access") {
-    override val description = "you're in a small stone room."
+    override val properName = "the " ++ name
+    override val description = "you're in a small stone room. The floor is wet. A small, broken chair sits against the wall."
 
     override lazy val wall0 = WallSecond0
     override lazy val wall1 = WallSecond1
@@ -87,6 +89,7 @@ object Rooms{
   }
 
   object StorageAccess extends Room(SouthEast, "storage access") {
+    override val properName = "the " ++ name
     override val description = "you're in a room lol."
 
     override lazy val wall0 = WallStorageAccess0
@@ -122,7 +125,7 @@ object Rooms{
     override lazy val wall3 = WallSix3
   }
 
-  object AtriumHallA extends Room(South, "atrium hall a") {
+  object AtriumHallA extends Room(South, "atrium hall A") {
     override val description = "you're in a room with walls of bronze."
 
     override lazy val wall0 = WallSixAccess0
@@ -131,7 +134,7 @@ object Rooms{
     override lazy val wall3 = WallSixAccess3
   }
 
-  object AtriumHallB extends Room(South, "atrium hall b") {
+  object AtriumHallB extends Room(South, "atrium hall B") {
     override val description = "you're in a room with walls of bronze."
 
     override lazy val wall0 = WallCenterAccess0
@@ -141,6 +144,7 @@ object Rooms{
   }
 
   object RoomCenter extends Room(South, "atrium") {
+    override val properName = "the " ++ name
     override val description = "you walk into a great, brightly lit room, walled off by a cylinder of glass, which" +
       " extends endlessly up and down. You stand upon a firm floor of glowing sand, and you look to see a great" +
       " ceiling of sand impossibly suspended above you. In fact, the whole of the glass room is suspended in a sea of" +
@@ -175,6 +179,7 @@ object Rooms{
   }
 
   object SouthBalcony extends Room(SouthWest, "south balcony") with Balcony {
+    override val properName = "the " ++ name
     override val description = "you stand outside on a balcony. It's night. The air is hot and still. Beyond the metal" +
       " railing stretches a vast sea, a black sea, blanketed with a still fog. Across the sea stand slender tree trunks," +
       " bare, perfectly straight, all sprouting endlessly upward. Just over the horizon, a grey, dead moon hangs in the" +
@@ -207,6 +212,7 @@ object Rooms{
   }
 
   object NorthBalcony extends Room(NorthWest, "north balcony") with Balcony {
+    override val properName = "the " ++ name
     override val description = "you stand outside on a balcony. It's night. The air is hot and still. An outgrowth of" +
       "gnarly brush blocks your view of the horizon past the metal railing."
 

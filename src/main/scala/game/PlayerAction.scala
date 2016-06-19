@@ -18,10 +18,18 @@ object PlayerAction {
   case class Enter(override val input1: Option[LookupResult]) extends OneTargetAction("enter", input1)
 
   case class TakeItem(override val input1: Option[LookupResult]) extends OneTargetAction("take", input1)
+  case class PlaceItem(override val input1: Option[LookupResult]) extends OneTargetAction("place", input1)
+
+  case class UseItem(override val input1: Option[LookupResult]) extends OneTargetAction("use", input1)
 
   case class Unlock(override val input1: Option[LookupResult]) extends OneTargetAction("unlock", input1)
 
+  case object CheckMap extends PlayerAction("", None)
+  case object CheckCompass extends PlayerAction("", None)
+
   case class Pull(override val input1: Option[LookupResult]) extends OneTargetAction("pull", input1)
+
+  case class PourBag(override val input1: Option[LookupResult]) extends OneTargetAction("pour", input1)
 
   case object Rewind extends PlayerAction("", None)
 }
