@@ -1,11 +1,9 @@
 package game
 
 import game.LockState.{Barred, Unlocked}
-import game.syntaxEn.Determiner._
-import game.syntaxEn.Noun.CeilingNoun
-import game.syntaxEn.Preposition.{From, With}
-import game.syntaxEn.Verb.{Hang, Pull}
-import game.syntaxEn.{SingularNounPhrase, PrepositionalPhrase, SingularNoun}
+import game.syntaxEn.Article.ZeroArticle
+import game.syntaxEn.Verb.{Engrave, Hang}
+import game.syntaxEn.{CountableNoun, Noun}
 
 sealed trait LeverState
 
@@ -14,20 +12,19 @@ object LeverState {
   object Down extends LeverState
 }
 
-class PullChain(var state: LeverState,
+abstract class PullChain(var state: LeverState,
                 val symbol: String, //Levers and door bars are engraved with matching symbols
                 door1: Door,
-                door2: Door) extends ConcreteArgument(Some(Pull.toAp), new SingularNoun("chain"), None) {
+                door2: Door) extends ConcreteArgument(new CountableNoun("pull chain")) {
   import game.LeverState._
-  override val stativeVerb = Hang
-  override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(From, CeilingNoun.withDefinite)
 
-  override def npIndefinite =
-    new SingularNounPhrase(Some(A), ap, noun, Some(
-      new PrepositionalPhrase(With, new SingularNounPhrase(
-        None, None, new SingularNoun(
-          s"the image of ${new SingularNoun(symbol).plural} engraved on the handle"), None)))) //Haven't figured how/too
-                                                                                               //lazy to do participial phrases.
+  val relSize = None
+  val material = None
+  val image = Some(new Image(ZeroArticle, new Noun(symbol), Engrave))
+  val text = None
+
+  override val stativeVerb = Hang
+  //override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(From, CeilingNoun.withDefinite)
 
   def pull() = {
     state match {

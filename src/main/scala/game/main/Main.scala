@@ -7,7 +7,7 @@ import game.engine.Engine
 
 object Main {
   def main(args: Array[String]) {
-    val startRoom = RoomThree
+    val startRoom = DungeonCell
     val startDirection = startRoom.outwardDirection.left.left
 
     val items = Items.list ++ Keys.list

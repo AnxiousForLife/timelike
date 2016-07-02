@@ -1,3 +1,3 @@
 package game.syntaxEn
 
-class Inflection(val person: Person, val number: Number, val tense: Tense)
+class Inflection(val tense: Tense, val aspect: Aspect) extends SyntacticCategory

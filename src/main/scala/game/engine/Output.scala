@@ -7,6 +7,7 @@ import game.assets.Title
 import game.syntaxEn.Verb.{Lie, Sit}
 import game.syntaxEn._
 import game.util.{Capitalize, ListStrings, OptionStrings, SeqUtil}
+import org.omg.PortableInterceptor.ACTIVE
 import sun.font.TrueTypeFont
 
 import scala.Console.{BOLD, RESET, UNDERLINED}
@@ -52,14 +53,14 @@ object Output {
               if (door.isOpen) Some("There's an open door before you.")
               else {
                 door.lock match {
-                  case x: Barred => Some("There's " ++ door.npIndefinite.toString ++ " before you," +
-                    s" but it's blocked by iron bars with images of ${new SingularNoun(x.symbol).plural} engraved on them.")
-                  case _ => Some("There's " ++ door.npIndefinite.toString ++ " before you.")
+                  case x: Barred => Some("There's " ++ door.introduceDP.toString ++ " before you," +
+                    s" but it's blocked by iron bars with images of ${new CountableNoun(x.symbol).plural} engraved on them.")
+                  case _ => Some("There's " ++ door.introduceDP.toString ++ " before you.")
                 }
               }
             }
             case _: BalconyWalkway => Some("The path continues this way.")
-            case _ => Some("There's " ++ doorway.npIndefinite.toString ++ " before you.")
+            case _ => Some("There's " ++ doorway.introduceDP.toString ++ " before you.")
           }
         }
       }
@@ -81,9 +82,13 @@ object Output {
               Sit
           }
         }
-        verb.toString
-        Some(new VerbPhrase(Present,
-          new ConjoinedNounPhrase((for (i <- items) yield i.npIndefinite).toList, And), verb, l.toPp).ppFirst.capitalize ++ ".")
+        val number = {
+          if (items.nonEmpty)
+            Plural
+          else
+            Singular
+        }
+        Some((l.pp.toString.trim ++ " " ++ verb.inflect(ThirdPerson, number, new Inflection(Present, Simple)) ++ Argument.distinguishArgs(items, And).toString ++ ".").capitalize)
       }
       else
         None
@@ -102,7 +107,7 @@ object Output {
     val argumentText: Option[String] = {
       state.currentWall.arguments match {
         case x if x.isEmpty => None
-        case arguments => Some((for (x <- arguments) yield OptionStrings.concat(Seq(Some(x.show.capitalize ++ "."), showItems(x)))).mkString(" "))
+        case arguments => Some((for (x <- arguments) yield OptionStrings.concat(Seq(Some(x.introduceDP.toString ++ "."), showItems(x)))).mkString(" "))
       }
     }
 
@@ -155,11 +160,11 @@ object Output {
 
   def showContents(state: GameState, c: Container) = {
     val text = state.itemsAtLocation(c.interior) match {
-      case Nil => s"${c.noun.withDefinite.toString.capitalize} is empty."
+      case Nil => s"${c.referenceDP.toString.capitalize} is empty."
       case items => {
-        val stringList: Seq[String] = for (x <- items) yield x.npIndefinite.toString
+        val stringList: Seq[String] = for (x <- items) yield x.referenceDP.toString
         val copula = if (stringList.length == 1) "is" else "are"
-        s"Inside ${c.noun.withDefinite.toString} $copula " ++ ListStrings.listOr(stringList) ++ "."
+        s"Inside ${c.referenceDP.toString} $copula " ++ ListStrings.listOr(stringList) ++ "."
       }
     }
     printIndent(text)
@@ -178,11 +183,11 @@ object Output {
   }
 
   def showOpen(o: ConcreteArgument with Openable) = {
-    printIndent(s"You open ${o.noun.withDefinite}.")
+    printIndent(s"You open ${o.referenceDP}.")
   }
 
   def showAlreadyOpened(o: ConcreteArgument with Openable) = {
-    printIndent(s"${o.noun.withDefinite.toString.capitalize} is already open.")
+    printIndent(s"${o.referenceDP.toString.capitalize} is already open.")
   }
 
   def showCantOpen() = {
@@ -195,17 +200,17 @@ object Output {
 
   //Prints a list of things the player can open if they don't specify what to open.
   def showAmbiguousOpen(openables: Seq[ConcreteArgument with Openable]) = {
-    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val stringList: Seq[String] = for (x <- openables) yield x.referenceDP.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could open $listOr.")
   }
 
   def showClose(o: ConcreteArgument with Openable) = {
-    printIndent(s"You close ${o.noun.withDefinite}.")
+    printIndent(s"You close ${o.referenceDP}.")
   }
 
   def showAlreadyClosed(o: ConcreteArgument with Openable) = {
-    printIndent(s"${o.noun.withDefinite.toString.capitalize} is already closed.")
+    printIndent(s"${o.referenceDP.toString.capitalize} is already closed.")
   }
 
   def showCantClose() = {
@@ -217,7 +222,7 @@ object Output {
   }
 
   def showAmbiguousClose(openables: Seq[ConcreteArgument with Openable]) = {
-    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val stringList: Seq[String] = for (x <- openables) yield x.referenceDP.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could close $listOr.")
   }
@@ -242,7 +247,7 @@ object Output {
   }
 
   def showInventory(state: GameState) = {
-    val stringList: Seq[String] = for (x <- state.itemsAtLocation(Inventory)) yield x.npIndefinite.toString
+    val stringList: Seq[String] = for (x <- state.itemsAtLocation(Inventory)) yield x.introduceDP.toString
     if (stringList.isEmpty)
       printIndent("You have nothing with you.")
     else
@@ -255,13 +260,13 @@ object Output {
 
   //Prints a list of items the player can take if they don't specify what to take.
   def showAmbiguousTake(items: Seq[Item]) = {
-    val stringList: Seq[String] = for (x <- items) yield x.noun.withDefinite.toString
+    val stringList: Seq[String] = for (x <- items) yield x.referenceDP.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could take $listOr.")
   }
 
   def showTakeItem(x: Item, l: ItemLocation) {
-    printIndent(s"You take ${x.simpleThe} from ${l.toN}.")
+    printIndent(s"You take ${x.referenceDP} from ${l.dp}.")
   }
 
   def showUnavailableArgument() {
@@ -279,11 +284,11 @@ object Output {
   def showDontHaveItem() = printIndent(s"You don't have that with you.")
 
   def showAskLocation(ls: Seq[ItemLocation]) = {
-    val options = ListStrings.listOr(for (x <- ls) yield x.toPp.toString ++ s"(" + BOLD + (ls.indexOf(x) + 1) + RESET + ")")
+    val options = ListStrings.listOr(for (x <- ls) yield x.pp.toString ++ s"(" + BOLD + (ls.indexOf(x) + 1) + RESET + ")")
     printIndent("Where? " ++ options.capitalize ++ "?")
   }
 
-  def showPlaceItem(i: Item, l: ItemLocation) = printIndent(s"You place ${i.npDefinite} ${l.toPp}.")
+  def showPlaceItem(i: Item, l: ItemLocation) = printIndent(s"You place ${i.referenceDP} ${l.pp}.")
 
   def showCantPlace() = printIndent("There's no room to place anything on the scale.")
 
@@ -300,7 +305,7 @@ object Output {
   }
 
   def showUnlock(o: ConcreteArgument with Openable) {
-    printIndent(s"You unlock ${o.noun.withDefinite}.")
+    printIndent(s"You unlock ${o.referenceDP}.")
   }
 
   def showNoKey() {
@@ -312,7 +317,7 @@ object Output {
   }
 
   def showAlreadyUnlocked(o: ConcreteArgument with Openable) = {
-    printIndent(s"${o.noun.withDefinite.toString.capitalize} isn't locked.")
+    printIndent(s"${o.referenceDP.toString.capitalize} isn't locked.")
   }
 
   def showNoUnlockable() = {
@@ -320,7 +325,7 @@ object Output {
   }
 
   def showAmbiguousUnlock(openables: Seq[ConcreteArgument with Openable]) = {
-    val stringList: Seq[String] = for (x <- openables) yield x.noun.withDefinite.toString
+    val stringList: Seq[String] = for (x <- openables) yield x.referenceDP.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could unlock $listOr.")
   }
@@ -340,7 +345,7 @@ object Output {
   }
 
   def showAmbiguousPull(levers: Seq[PullChain]) = {
-    val stringList: Seq[String] = for (x <- levers) yield x.noun.withDefinite.toString
+    val stringList: Seq[String] = for (x <- levers) yield x.referenceDP.toString
     val listOr = ListStrings.listOr(stringList)
     printIndent(s"You could unlock $listOr.")
   }

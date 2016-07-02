@@ -1,20 +1,22 @@
 package game
 
-import game.syntaxEn._
+import game.syntaxEn.{Noun, _}
 import game.syntaxEn.Adjective._
+import game.syntaxEn.Article.ZeroArticle
 import game.syntaxEn.Noun._
 import game.syntaxEn.Preposition._
 import game.syntaxEn.Verb.Stand
 
 //Connector for two Rooms
-class Doorway(val room1: Room,
+abstract class Doorway(val room1: Room,
               val room2: Room,
-              override val ap: Option[AdjectivePhrase],
-              override val noun: SingularNoun,
-              override val pp: Option[PrepositionalPhrase])
-  extends ConcreteArgument(ap, noun, pp) {
+              override val noun: CountableNoun)
+  extends ConcreteArgument(noun) {
+  val text = None
+  val image = None
+
   override val stativeVerb = Stand
-  override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(Before, YouNoun.toNp)
+  //override val locationPp: PrepositionalPhrase = new PrepositionalPhrase(Before, )
 
   def nextRoom(currentRoom: Room): Room = {
     currentRoom match {
@@ -24,28 +26,31 @@ class Doorway(val room1: Room,
   }
 }
 
-class Door(override val room1: Room,
+abstract class Door(override val room1: Room,
            override val room2: Room,
-           override val ap: Option[AdjectivePhrase],
-           override val noun: SingularNoun,
-           override val pp: Option[PrepositionalPhrase]) extends Doorway(room1, room2, ap, noun, pp)
+           override val noun: CountableNoun) extends Doorway(room1, room2, noun)
   with Openable
 
-class SingleDoor(override val room1: Room,
-                 override val room2: Room,
-                 override val ap: Option[AdjectivePhrase],
-                 override val pp: Option[PrepositionalPhrase]) extends Door(room1, room2, ap, DoorNoun, pp)
+abstract class SingleDoor(override val room1: Room,
+                 override val room2: Room) extends Door(room1, room2, DoorNoun)
 
-class DoorPair(override val room1: Room,
-               override val room2: Room) extends Door(room1, room2, None, PairNoun,
-  Some(new PrepositionalPhrase(Of, new SingularNounPhrase(None, Some(IronAdj.toAp), DoorNoun.plural, None))))
+abstract class DoorPair(override val room1: Room,
+               override val room2: Room) extends Door(room1, room2, DoorNoun) {
+  override def describe(xps: Seq[Option[XP[_] with AdjunctOfNP]]): NP = {
+    val doorsDP: DP = ZeroArticle.quickDP(noun)
 
-class ConcealedDoor(override val room1: Room,
-                    override val room2: Room,
-                    override val ap: Option[AdjectivePhrase],
-                    override val pp: Option[PrepositionalPhrase]) extends Door(room1, room2, ap, BookcaseNoun, pp)
+    PairNoun.addComplement(Of.newPP(doorsDP)).addAdjunctOptions(xps)
+  }
+}
 
-class BalconyWalkway(override val room1: Room,
+abstract class ConcealedDoor(override val room1: Room,
+                    override val room2: Room) extends Door(room1, room2, BookcaseNoun) {
+  val relSize = Some(Large)
+  val material = Some(Wooden)
+
+}
+
+abstract class BalconyWalkway(override val room1: Room,
                      override val room2: Room)
-  extends Doorway(room1, room2, None, new SingularNoun("balcony"), None)
+  extends Doorway(room1, room2, new CountableNoun("balcony"))
 

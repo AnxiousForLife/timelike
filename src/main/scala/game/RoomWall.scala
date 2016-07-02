@@ -1,11 +1,10 @@
 package game
 
-import game.syntaxEn._
-import game.syntaxEn.Determiner._
+import game.syntaxEn.Noun.FloorNoun
 import game.syntaxEn.Preposition._
 
 class RoomWall(val door: Option[Doorway], val arguments: Seq[ConcreteArgument]) {
-  val floor = new ItemLocation(On, new SingularNounPhrase(Some(The), None, new Noun("floor"), None))
+  val floor = new ItemLocation(On, FloorNoun)
   val objective: Option[Objective] = None
 
   def availArguments: Seq[ConcreteArgument] = arguments.filter(_.isAvailable)

@@ -1,29 +1,25 @@
 package game
 
+import game.syntaxEn.Article.The
 import game.syntaxEn._
-import game.syntaxEn.Determiner._
+import game.syntaxEn.Noun.{BookcaseNoun, PocketNoun, TopNoun}
 import game.syntaxEn.Preposition._
+import game.syntaxEn.Pronoun.You
 
 //Anywhere an Item can be
-class ItemLocation(p: Preposition, np: SingularNounPhrase) {
-  def toPp = new PrepositionalPhrase(p, np)
-  def toN = np
+class ItemLocation(val p: Preposition, val n: Noun) {
+  def dp = The.quickDP(n)
+  def pp = p.newPP(dp)
 }
 
-class Top(val a: ConcreteArgument)
-  extends ItemLocation(
-    On, new SingularNounPhrase(None, None, new Noun("top"),
-      Some(new PrepositionalPhrase(Of, new SingularNounPhrase(Some(The), a.ap, a.noun, a.pp))))) {
-  override def toN = a.simpleThe
-}
+class Top(val a: ConcreteArgument) extends ItemLocation(On, TopNoun)
 
-class Interior(val a: ConcreteArgument)
-  extends ItemLocation(Inside, new SingularNounPhrase(Some(The), None, a.noun, None)) {
-  override def toN = a.simpleThe
-}
+class Interior(val a: ConcreteArgument) extends ItemLocation(Inside, a.noun)
 
-object Inventory extends ItemLocation(In, new SingularNounPhrase(Some(Your), None, new Noun("pocket"), None)) {
+object Inventory extends ItemLocation(In, PocketNoun) {
+  override def pp = p.newPP(You.dependentPossessive.quickDP(n))
+
   def contains(i: Item): Boolean = i.location == this
 }
 
-object Undefined extends ItemLocation(In, new SingularNounPhrase(None, None, new Noun(""), None))
+object Undefined extends ItemLocation(In, BookcaseNoun)

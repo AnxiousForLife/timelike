@@ -8,25 +8,14 @@ import game.syntaxEn.Preposition._
 import game.syntaxEn.Pronoun._
 import game.syntaxEn.Verb.Lie
 
-class Item(var location: ItemLocation,
+abstract class Item(var location: ItemLocation,
            val useAction: PlayerAction,
-           override val ap: Option[AdjectivePhrase],
-           override val noun: SingularNoun,
-           override val pp: Option[PrepositionalPhrase]) extends ConcreteArgument(ap, noun, pp) {
+           override val noun: CountableNoun) extends ConcreteArgument(noun) {
   override val stativeVerb: Verb = Lie
-  override val locationPp: PrepositionalPhrase = location.toPp
 
   def place(l: ItemLocation) = { location = l }
   def take() = place(Inventory)
 }
 
-class Key(location: ItemLocation,
-          override val ap: Option[AdjectivePhrase],
-          override val pp: Option[PrepositionalPhrase])
-  extends Item(location, Unlock(None), ap, new SingularNoun("key"), pp)
-
-object Key {
-  def numeral(n: Int) =
-    new PrepositionalPhrase(With,
-      new SingularNounPhrase(Some(A), Some(NumeralNoun.toAp), Noun.numeral(n), Some(new PrepositionalPhrase(On, It.toNp))))
-}
+abstract class Key(location: ItemLocation)
+  extends Item(location, Unlock(None), new CountableNoun("key"))

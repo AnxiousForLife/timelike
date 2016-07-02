@@ -61,7 +61,9 @@ object Direction {
   case object NorthWest extends Direction("northwest")
 }
 
-sealed abstract class RelativeDirection(val noun: Noun) extends Argument(noun)
+sealed abstract class RelativeDirection(val noun: Noun) extends Argument(noun) {
+  override def toString = noun.toString.trim
+}
 
 object RelativeDirection {
   case object Left extends RelativeDirection(new Noun("left"))
